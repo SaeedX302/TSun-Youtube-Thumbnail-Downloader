@@ -1,39 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title>Tsun-ytgrab 0.1 - get youtube thumbnails</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" charset="utf-8">
-    <link rel="stylesheet" href="style.css" charset="utf-8">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TSun Thumbnail Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" charset="utf-8" />
   </head>
   <body>
-    <div class="container">
-      <div class="logo">
-        <h1>Tsun-ytgrab</h1>
-        <h4>get youtube thumbnails</h4>
-      </div>
-      <form id="ifrm" method="post">
-        <div class="form-group">
-          <label for="yturl"></label>
-          <input type="text" name="name" class="form-control" id="urlTxt" placeholder="Enter Youtube URL">
-          <button type="button" name="button" id="btn-grab" class="btn btn-primary">Grab</button>
-        </div>
-      </form>
-      <div class="yt-wrap">
-        <iframe id="youtube" width="360" height="203" frameborder="0" allowfullscreen class="center-block"></iframe>
-      </div>
+    <main class="app-shell">
+      <section class="hero card">
+        <p class="badge">2017 classic</p>
+        <h1>TSun Thumbnail Downloader</h1>
+        <p class="subtitle">Paste a YouTube link and instantly download every available thumbnail size.</p>
 
-      <div id="select">
-        <h4>Download thumbanails </h4>
-        <ul class="list-inline">
-        </ul>
-      </div>
-      <footer>
-        &copy; TSun-ytgrab, 2016
-      </footer>
-    </div>
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js" charset="utf-8"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" charset="utf-8"></script>
+        <form id="ifrm" class="grab-form" novalidate>
+          <label class="sr-only" for="urlTxt">YouTube URL</label>
+          <input
+            type="url"
+            id="urlTxt"
+            placeholder="https://www.youtube.com/watch?v=..."
+            autocomplete="off"
+            required
+          />
+          <button type="submit" id="btn-grab">Get Thumbnails</button>
+        </form>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="preview card">
+        <h2>Video Preview</h2>
+        <div class="video-frame">
+          <iframe
+            id="youtube"
+            title="YouTube preview"
+            src=""
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      <section id="select" class="downloads card" hidden>
+        <div class="downloads-head">
+          <h2>Download Thumbnails</h2>
+          <button id="copyBtn" type="button" class="ghost-btn">Copy Video ID</button>
+        </div>
+        <ul class="thumbnail-grid"></ul>
+      </section>
+    </main>
+
+    <footer>
+      <span>&copy; TSun-ytgrab, 2017</span>
+    </footer>
     <script src="main.js" charset="utf-8"></script>
   </body>
 </html>

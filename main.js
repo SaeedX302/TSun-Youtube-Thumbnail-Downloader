@@ -1,62 +1,140 @@
-// Function that control grab
-$(function() {
-  $("#btn-grab").one("click",function(){
-    var yURL = $("#urlTxt").val();
-    var imgURL = "http://img.youtube.com/vi";
-    var count = 1;
-    // Get Youtube ID
-    if (validURL(yURL)==1) {
-      var vdoID = youtube_ID(yURL);
-      // youtube img url
-      $("#youtube").attr("src","https://www.youtube.com/embed/"+vdoID+"?autoplay=1");
-      var zero0 = imgURL+"/"+vdoID+"/0.jpg";
-      var one1 = imgURL+"/"+vdoID+"/1.jpg";
-      var two2 = imgURL+"/"+vdoID+"/2.jpg";
-      var three3 = imgURL+"/"+vdoID+"/3.jpg";
-      var defaultImg = imgURL+"/"+vdoID+"/default.jpg";
-      var hqDefault = imgURL+"/"+vdoID+"/hqdefault.jpg";
-      var mqDefault = imgURL+"/"+vdoID+"/mqdefault.jpg";
-      var sdDefault = imgURL+"/"+vdoID+"/sddefault.jpg";
-      var maxDefault = imgURL+"/"+vdoID+"/maxresdefault.jpg";
+const form = document.getElementById("ifrm");
+const input = document.getElementById("urlTxt");
+const button = document.getElementById("btn-grab");
+const statusEl = document.getElementById("status");
+const iframe = document.getElementById("youtube");
+const selectSection = document.getElementById("select");
+const thumbnailGrid = document.querySelector(".thumbnail-grid");
+const copyButton = document.getElementById("copyBtn");
 
-      $(".list-inline").append("<li><a href='"+zero0+"' download='0.jpg'>0</a></li>"+
-                    "<li><a href='"+one1+"' download='1.jpg'>1</a></li>"+
-                    "<li><a href='"+two2+"' download='2.jpg'>2</a></li>"+
-                    "<li><a href='"+three3+"' download='3.jpg'>3</a></li>"+
-                    "<li><a href='"+defaultImg+"' download='defaultImg.jpg'>Default</a></li>"+
-                    "<li><a href='"+sdDefault+"' download='sddefault.jpg'>Standard</a></li>"+
-                    "<li><a href='"+mqDefault+"' download='mqdefault.jpg'>Medium</a></li>"+
-                    "<li><a href='"+hqDefault+"' download='hqdefault.jpg'>HQ</a></li>"+
-                    "<li><a href='"+maxDefault+"' download='maxdefault.jpg'>Max Res.</a></li>"
-      );
+let currentVideoId = "";
 
-      $("#select").css("display","block");
-      $("select").change(function()
-      {
-          var dwImg = $( "#select option:selected" ).val();
-          var dwTxt = $( "#select option:selected" ).text();
-          $("#dwn").attr({href:dwImg,download:dwTxt});
-      });
-    } else {
-      $("#select").fadeIn("slow");
-      $("#youtube").removeAttr("src");
+function setStatus(message, type) {
+  statusEl.textContent = message;
+  statusEl.classList.remove("ok", "error");
+
+  if (type) {
+    statusEl.classList.add(type);
+  }
+}
+
+function getYouTubeId(urlText) {
+  const value = (urlText || "").trim();
+
+  if (!value) {
+    return null;
+  }
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(value)) {
+    return value;
+  }
+
+  try {
+    const parsed = new URL(value);
+    const host = parsed.hostname.replace("www.", "").toLowerCase();
+
+    if (host === "youtu.be") {
+      const shortId = parsed.pathname.slice(1);
+      return /^[a-zA-Z0-9_-]{11}$/.test(shortId) ? shortId : null;
     }
+
+    if (host === "youtube.com" || host.endsWith(".youtube.com")) {
+      const fromQuery = parsed.searchParams.get("v");
+      if (fromQuery && /^[a-zA-Z0-9_-]{11}$/.test(fromQuery)) {
+        return fromQuery;
+      }
+
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      const candidate = parts[1] || parts[0];
+      if (candidate && /^[a-zA-Z0-9_-]{11}$/.test(candidate)) {
+        return candidate;
+      }
+    }
+  } catch (error) {
+    return null;
+  }
+
+  return null;
+}
+
+function buildThumbnailUrl(videoId, name) {
+  return `https://img.youtube.com/vi/${videoId}/${name}`;
+}
+
+function renderThumbnailCards(videoId) {
+  const thumbnailFiles = [
+    "0.jpg",
+    "1.jpg",
+    "2.jpg",
+    "3.jpg",
+    "default.jpg",
+    "mqdefault.jpg",
+    "hqdefault.jpg",
+    "sddefault.jpg",
+    "maxresdefault.jpg"
+  ];
+
+  thumbnailGrid.innerHTML = "";
+
+  thumbnailFiles.forEach((fileName) => {
+    const imageUrl = buildThumbnailUrl(videoId, fileName);
+
+    const item = document.createElement("li");
+    item.className = "thumb-card";
+    item.innerHTML = `
+      <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" />
+      <div class="thumb-meta">
+        <span class="thumb-name">${fileName}</span>
+        <a class="thumb-download" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
+      </div>
+    `;
+
+    thumbnailGrid.appendChild(item);
   });
+}
+
+function updatePreview(videoId) {
+  iframe.src = `https://www.youtube.com/embed/${videoId}`;
+}
+
+function resetOutput() {
+  thumbnailGrid.innerHTML = "";
+  iframe.removeAttribute("src");
+  selectSection.hidden = true;
+  currentVideoId = "";
+}
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  button.disabled = true;
+
+  const videoId = getYouTubeId(input.value);
+
+  if (!videoId) {
+    resetOutput();
+    setStatus("Please enter a valid YouTube URL or 11-character video ID.", "error");
+    button.disabled = false;
+    return;
+  }
+
+  currentVideoId = videoId;
+  updatePreview(videoId);
+  renderThumbnailCards(videoId);
+  selectSection.hidden = false;
+  setStatus("Thumbnails loaded. Pick any version and download.", "ok");
+  button.disabled = false;
 });
 
-// Get youtube ID
-function youtube_ID(url){
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-    var match = url.match(regExp);
-    return (match&&match[7].length==11)? match[7] : false;
-}
+copyButton.addEventListener("click", async () => {
+  if (!currentVideoId) {
+    setStatus("Load a video first to copy the ID.", "error");
+    return;
+  }
 
-// validate url
-function validURL(yurl) {
-  var myVariable = yurl;
-   if(/^(http|https|ftp):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i.test(myVariable)) {
-     return 1;
-   } else {
-     return -1;
-   }
-}
+  try {
+    await navigator.clipboard.writeText(currentVideoId);
+    setStatus("Video ID copied to clipboard.", "ok");
+  } catch (error) {
+    setStatus("Clipboard access failed. You can copy the ID manually.", "error");
+  }
+});
