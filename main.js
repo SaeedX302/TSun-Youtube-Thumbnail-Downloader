@@ -6,8 +6,31 @@ const iframe = document.getElementById("youtube");
 const selectSection = document.getElementById("select");
 const thumbnailGrid = document.querySelector(".thumbnail-grid");
 const copyButton = document.getElementById("copyBtn");
+const themeToggle = document.getElementById("themeToggle");
 
 let currentVideoId = "";
+
+const currentTheme = localStorage.getItem("theme");
+if (currentTheme) {
+  document.documentElement.setAttribute("data-theme", currentTheme);
+  themeToggle.setAttribute("aria-label", currentTheme === "light" ? "Switch to dark mode" : "Switch to light mode");
+} else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+  document.documentElement.setAttribute("data-theme", "light");
+  themeToggle.setAttribute("aria-label", "Switch to dark mode");
+}
+
+themeToggle.addEventListener("click", () => {
+  let theme = document.documentElement.getAttribute("data-theme");
+  if (theme === "light") {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("theme", "dark");
+    themeToggle.setAttribute("aria-label", "Switch to light mode");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+    themeToggle.setAttribute("aria-label", "Switch to dark mode");
+  }
+});
 
 function setStatus(message, type) {
   statusEl.textContent = message;
