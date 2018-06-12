@@ -13,20 +13,26 @@ let currentVideoId = "";
 const currentTheme = localStorage.getItem("theme");
 if (currentTheme) {
   document.documentElement.setAttribute("data-theme", currentTheme);
+  document.documentElement.setAttribute("data-bs-theme", currentTheme);
   themeToggle.setAttribute("aria-label", currentTheme === "light" ? "Switch to dark mode" : "Switch to light mode");
 } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
   document.documentElement.setAttribute("data-theme", "light");
+  document.documentElement.setAttribute("data-bs-theme", "light");
   themeToggle.setAttribute("aria-label", "Switch to dark mode");
+} else {
+  document.documentElement.setAttribute("data-bs-theme", "dark");
 }
 
 themeToggle.addEventListener("click", () => {
   let theme = document.documentElement.getAttribute("data-theme");
   if (theme === "light") {
     document.documentElement.removeAttribute("data-theme");
+    document.documentElement.setAttribute("data-bs-theme", "dark");
     localStorage.setItem("theme", "dark");
     themeToggle.setAttribute("aria-label", "Switch to light mode");
   } else {
     document.documentElement.setAttribute("data-theme", "light");
+    document.documentElement.setAttribute("data-bs-theme", "light");
     localStorage.setItem("theme", "light");
     themeToggle.setAttribute("aria-label", "Switch to dark mode");
   }
@@ -103,12 +109,14 @@ function renderThumbnailCards(videoId) {
     const imageUrl = buildThumbnailUrl(videoId, fileName);
 
     const item = document.createElement("li");
-    item.className = "thumb-card";
+    item.className = "col-12 col-sm-6 col-md-4";
     item.innerHTML = `
-      <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" />
-      <div class="thumb-meta">
-        <span class="thumb-name">${fileName}</span>
-        <a class="thumb-download" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
+      <div class="thumb-card d-flex flex-column h-100">
+        <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" class="w-100 rounded mb-2" />
+        <div class="thumb-meta mt-auto d-flex justify-content-between align-items-center">
+          <span class="thumb-name text-truncate me-2">${fileName}</span>
+          <a class="thumb-download text-decoration-none fw-bold" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
+        </div>
       </div>
     `;
 
