@@ -50,37 +50,19 @@ function setStatus(message, type) {
 function getYouTubeId(urlText) {
   const value = (urlText || "").trim();
 
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
+  // Exact 11-char match
   if (/^[a-zA-Z0-9_-]{11}$/.test(value)) {
     return value;
   }
 
-  try {
-    const parsed = new URL(value);
-    const host = parsed.hostname.replace("www.", "").toLowerCase();
-
-    if (host === "youtu.be") {
-      const shortId = parsed.pathname.slice(1);
-      return /^[a-zA-Z0-9_-]{11}$/.test(shortId) ? shortId : null;
-    }
-
-    if (host === "youtube.com" || host.endsWith(".youtube.com")) {
-      const fromQuery = parsed.searchParams.get("v");
-      if (fromQuery && /^[a-zA-Z0-9_-]{11}$/.test(fromQuery)) {
-        return fromQuery;
-      }
-
-      const parts = parsed.pathname.split("/").filter(Boolean);
-      const candidate = parts[1] || parts[0];
-      if (candidate && /^[a-zA-Z0-9_-]{11}$/.test(candidate)) {
-        return candidate;
-      }
-    }
-  } catch (error) {
-    return null;
+  // Modern and robust regex for YouTube domains and youtu.be short links
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+  const match = value.match(regex);
+  
+  if (match && match[1]) {
+    return match[1];
   }
 
   return null;
