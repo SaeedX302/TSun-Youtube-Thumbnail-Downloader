@@ -93,11 +93,11 @@ function renderThumbnailCards(videoId) {
     const item = document.createElement("li");
     item.className = "col-12 col-sm-6 col-md-4";
     item.innerHTML = `
-      <div class="thumb-card d-flex flex-column h-100">
-        <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" class="w-100 rounded mb-2" />
-        <div class="thumb-meta mt-auto d-flex justify-content-between align-items-center">
-          <span class="thumb-name text-truncate me-2">${fileName}</span>
-          <a class="thumb-download text-decoration-none fw-bold" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
+      <div class="card h-100 shadow-sm overflow-hidden border-secondary-subtle">
+        <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" class="card-img-top object-fit-cover" style="aspect-ratio: 16/9; background-color: var(--bs-secondary-bg);" />
+        <div class="card-body d-flex flex-column">
+          <h6 class="card-title text-truncate mb-3" title="${fileName}">${fileName}</h6>
+          <a class="btn btn-primary btn-sm fw-bold w-100 mt-auto" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
         </div>
       </div>
     `;

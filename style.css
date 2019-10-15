@@ -154,38 +154,6 @@ body {
   padding: 0;
 }
 
-.thumb-card {
-  background: var(--panel-alt);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.6rem;
-  height: 100%;
-}
-
-.thumb-card img {
-  width: 100%;
-  display: block;
-  border-radius: 10px;
-  border: 1px solid var(--img-border, #243252);
-}
-
-.thumb-name {
-  color: var(--text);
-  font-size: 0.85rem;
-}
-
-.thumb-download {
-  color: var(--link-color);
-  text-decoration: none;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.thumb-download:hover,
-.thumb-download:focus-visible {
-  text-decoration: underline;
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
