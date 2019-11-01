@@ -72,6 +72,25 @@ function buildThumbnailUrl(videoId, name) {
   return `https://img.youtube.com/vi/${videoId}/${name}`;
 }
 
+async function downloadThumbnail(url, filename) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
+    const blob = await response.blob();
+    const objectUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(objectUrl);
+  } catch (error) {
+    console.error("Download failed, opening in new tab instead.", error);
+    window.open(url, "_blank");
+  }
+}
+
 function renderThumbnailCards(videoId) {
   const thumbnailFiles = [
     "0.jpg",
@@ -89,6 +108,7 @@ function renderThumbnailCards(videoId) {
 
   thumbnailFiles.forEach((fileName) => {
     const imageUrl = buildThumbnailUrl(videoId, fileName);
+    const downloadName = `${videoId}-${fileName}`;
 
     const item = document.createElement("li");
     item.className = "col-12 col-sm-6 col-md-4";
@@ -97,10 +117,25 @@ function renderThumbnailCards(videoId) {
         <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" class="card-img-top object-fit-cover" style="aspect-ratio: 16/9; background-color: var(--bs-secondary-bg);" />
         <div class="card-body d-flex flex-column">
           <h6 class="card-title text-truncate mb-3" title="${fileName}">${fileName}</h6>
-          <a class="btn btn-primary btn-sm fw-bold w-100 mt-auto" href="${imageUrl}" download="${videoId}-${fileName}">Download</a>
+          <button class="btn btn-primary btn-sm fw-bold w-100 mt-auto download-btn" data-url="${imageUrl}" data-filename="${downloadName}">Download</button>
         </div>
       </div>
     `;
+
+    // Extract the button and attach the fetch API download handler
+    const downloadBtn = item.querySelector('.download-btn');
+    downloadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      const originalText = downloadBtn.textContent;
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Downloading...';
+
+      downloadThumbnail(imageUrl, downloadName).finally(() => {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = originalText;
+      });
+    });
 
     thumbnailGrid.appendChild(item);
   });
