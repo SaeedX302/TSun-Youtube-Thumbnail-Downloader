@@ -118,8 +118,14 @@ function renderThumbnailCards(videoId) {
         <div class="card-body d-flex flex-column">
           <h6 class="card-title text-truncate mb-3" title="${fileName}">${fileName}</h6>
           <div class="d-flex gap-2 w-100 mt-auto">
-            <button class="btn btn-primary btn-sm fw-bold flex-grow-1 download-btn" data-url="${imageUrl}" data-filename="${downloadName}">Download</button>
-            <button class="btn btn-outline-secondary btn-sm fw-bold flex-grow-1 copy-link-btn" data-url="${imageUrl}">Copy Link</button>
+            <button class="btn btn-primary btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center download-btn" data-url="${imageUrl}" data-filename="${downloadName}">
+              <img src="https://img.icons8.com/3d-fluency/48/download.png" alt="Download" width="16" height="16" class="me-1">
+              Download
+            </button>
+            <button class="btn btn-outline-secondary btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center copy-link-btn" data-url="${imageUrl}">
+              <img src="https://img.icons8.com/deco/48/copy.png" alt="Copy" width="16" height="16" class="me-1 copy-icon">
+              Copy Link
+            </button>
           </div>
         </div>
       </div>
@@ -130,13 +136,13 @@ function renderThumbnailCards(videoId) {
     downloadBtn.addEventListener('click', (e) => {
       e.preventDefault();
       
-      const originalText = downloadBtn.textContent;
+      const originalHTML = downloadBtn.innerHTML;
       downloadBtn.disabled = true;
-      downloadBtn.textContent = 'Downloading...';
+      downloadBtn.innerHTML = '<img src="https://img.icons8.com/3d-fluency/48/hourglass.png" alt="Wait" width="16" height="16" class="me-1">...';
 
       downloadThumbnail(imageUrl, downloadName).finally(() => {
         downloadBtn.disabled = false;
-        downloadBtn.textContent = originalText;
+        downloadBtn.innerHTML = originalHTML;
       });
     });
 
@@ -145,13 +151,13 @@ function renderThumbnailCards(videoId) {
       e.preventDefault();
       try {
         await navigator.clipboard.writeText(imageUrl);
-        const originalText = copyLinkBtn.textContent;
-        copyLinkBtn.textContent = 'Copied!';
+        const originalHTML = copyLinkBtn.innerHTML;
+        copyLinkBtn.innerHTML = '<img src="https://img.icons8.com/3d-fluency/48/ok.png" alt="OK" width="16" height="16" class="me-1">Copied!';
         copyLinkBtn.classList.replace('btn-outline-secondary', 'btn-success');
         copyLinkBtn.classList.replace('text-body', 'text-white');
         
         setTimeout(() => {
-          copyLinkBtn.textContent = originalText;
+          copyLinkBtn.innerHTML = originalHTML;
           copyLinkBtn.classList.replace('btn-success', 'btn-outline-secondary');
         }, 2000);
       } catch (err) {

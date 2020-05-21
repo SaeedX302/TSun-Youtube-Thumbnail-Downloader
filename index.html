@@ -27,21 +27,9 @@
   </head>
   <body class="d-flex flex-column min-vh-100">
     <header class="site-header p-3 d-flex justify-content-end">
-      <button id="themeToggle" type="button" class="theme-toggle btn btn-outline-secondary d-flex align-items-center justify-content-center" aria-label="Toggle dark mode">
-        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
+      <button id="themeToggle" type="button" class="theme-toggle btn btn-outline-secondary d-flex align-items-center justify-content-center border-0" aria-label="Toggle dark mode">
+        <img class="icon-moon" src="https://img.icons8.com/3d-fluency/48/crescent-moon.png" alt="Moon" width="32" height="32" />
+        <img class="icon-sun" src="https://img.icons8.com/3d-fluency/48/sun.png" alt="Sun" width="32" height="32" />
       </button>
     </header>
     <main class="container my-4 flex-grow-1">
@@ -50,9 +38,14 @@
           
           <section class="hero card mb-4 shadow-sm">
             <div class="card-body">
-              <p class="badge bg-danger rounded-pill mb-2">2019 Premium</p>
-              <h1 class="h2 fw-bold">TSun Thumbnail Downloader</h1>
-              <p class="subtitle text-muted mb-4">Paste a YouTube link and instantly download every available thumbnail size.</p>
+              <div class="d-flex align-items-center mb-3">
+                <img src="https://img.icons8.com/3d-fluency/94/youtube-play.png" alt="YouTube Icon" width="48" height="48" class="me-3">
+                <div>
+                  <p class="badge bg-danger rounded-pill mb-1">2020 Premium</p>
+                  <h1 class="h2 fw-bold mb-0">TSun Thumbnail Downloader</h1>
+                </div>
+              </div>
+              <p class="subtitle text-muted mb-4 mt-2">Paste a YouTube link and instantly download every available thumbnail size.</p>
 
               <form id="ifrm" novalidate>
                 <label class="visually-hidden" for="urlTxt">YouTube URL</label>
@@ -65,7 +58,10 @@
                     autocomplete="off"
                     required
                   />
-                  <button type="submit" id="btn-grab" class="btn btn-primary fw-bold px-4">Get Thumbnails</button>
+                  <button type="submit" id="btn-grab" class="btn btn-primary fw-bold px-4 d-flex align-items-center justify-content-center">
+                    <img src="https://img.icons8.com/3d-fluency/48/search.png" alt="Search Icon" width="24" height="24" class="me-2">
+                    Get Thumbnails
+                  </button>
                 </div>
               </form>
 
@@ -75,7 +71,10 @@
 
           <section class="preview card mb-4 shadow-sm">
             <div class="card-body">
-              <h2 class="h4 mb-3">Video Preview</h2>
+              <h2 class="h4 mb-3 d-flex align-items-center">
+                <img src="https://img.icons8.com/3d-fluency/48/tv-show.png" alt="Preview" width="28" height="28" class="me-2">
+                Video Preview
+              </h2>
               <div class="video-frame ratio ratio-16x9 rounded overflow-hidden">
                 <iframe
                   id="youtube"
@@ -91,8 +90,14 @@
           <section id="select" class="downloads card shadow-sm" hidden>
             <div class="card-body">
               <div class="downloads-head d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <h2 class="h4 mb-0">Download Thumbnails</h2>
-                <button id="copyBtn" type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-medium px-3">Copy Video ID</button>
+                <h2 class="h4 mb-0 d-flex align-items-center">
+                  <img src="https://img.icons8.com/stickers/100/download-2.png" alt="Download" width="28" height="28" class="me-2">
+                  Download Thumbnails
+                </h2>
+                <button id="copyBtn" type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-medium px-3 d-flex align-items-center">
+                  <img src="https://img.icons8.com/deco/48/copy.png" alt="Copy" width="16" height="16" class="me-2">
+                  Copy Video ID
+                </button>
               </div>
               <ul class="thumbnail-grid row g-3 list-unstyled"></ul>
             </div>
