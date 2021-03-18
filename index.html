@@ -26,24 +26,30 @@
     </script>
   </head>
   <body class="d-flex flex-column min-vh-100">
-    <header class="site-header p-3 d-flex justify-content-end">
+    <header class="site-header p-3 d-flex justify-content-between align-items-center">
+      <div class="brand-chip d-inline-flex align-items-center gap-2">
+        <img src="https://img.icons8.com/3d-fluency/48/youtube-play.png" alt="TSun" width="24" height="24" />
+        <span class="fw-semibold">TSun Studio</span>
+      </div>
       <button id="themeToggle" type="button" class="theme-toggle btn btn-outline-secondary d-flex align-items-center justify-content-center border-0" aria-label="Toggle dark mode">
         <img class="icon-moon" src="https://img.icons8.com/3d-fluency/48/crescent-moon.png" alt="Moon" width="32" height="32" />
         <img class="icon-sun" src="https://img.icons8.com/3d-fluency/48/sun.png" alt="Sun" width="32" height="32" />
       </button>
     </header>
-    <main class="container my-4 flex-grow-1">
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+    <main class="container py-4 py-md-5 flex-grow-1">
+      <div class="app-shell mx-auto">
+        <div class="row justify-content-center g-4">
+          <div class="col-12 col-lg-11 col-xl-10">
           
           <section class="hero card mb-4 shadow-sm">
             <div class="card-body">
-              <div class="d-flex align-items-center mb-3">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                 <img src="https://img.icons8.com/3d-fluency/94/youtube-play.png" alt="YouTube Icon" width="48" height="48" class="me-3">
                 <div>
                   <p class="badge bg-danger rounded-pill mb-1">2020 Premium</p>
                   <h1 class="h2 fw-bold mb-0">TSun Thumbnail Downloader</h1>
                 </div>
+                <span class="pill-note">Fast • Clean • HD</span>
               </div>
               <p class="subtitle text-muted mb-4 mt-2">Paste a YouTube link and instantly download every available thumbnail size.</p>
 
@@ -103,11 +109,12 @@
             </div>
           </section>
 
+          </div>
         </div>
       </div>
     </main>
 
-    <footer class="text-center py-4 mt-auto border-top border-secondary-subtle">
+    <footer class="site-footer text-center py-4 mt-auto border-top border-secondary-subtle">
       <div class="container">
         <h5 class="fw-bold mb-3 text-secondary">📌 Connect with TSun:</h5>
         <div class="d-flex justify-content-center gap-4 mb-3">
