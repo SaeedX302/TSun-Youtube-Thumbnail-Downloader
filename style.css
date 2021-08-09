@@ -20,6 +20,9 @@
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   --transition-silk: 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  --mesh-a: rgba(255, 82, 82, 0.32);
+  --mesh-b: rgba(130, 177, 255, 0.26);
+  --mesh-c: rgba(76, 175, 80, 0.2);
 }
 
 [data-theme="light"] {
@@ -43,6 +46,9 @@
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(0, 0, 0, 0.08);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --mesh-a: rgba(255, 138, 101, 0.28);
+  --mesh-b: rgba(100, 181, 246, 0.24);
+  --mesh-c: rgba(129, 199, 132, 0.18);
 }
 
 [data-theme="light"] body {
@@ -114,6 +120,39 @@ body {
   background-attachment: fixed;
   color: var(--text);
   transition: background-color var(--transition-silk), color var(--transition-silk);
+  position: relative;
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 64vmax;
+  height: 64vmax;
+  border-radius: 50%;
+  filter: blur(72px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.85;
+  mix-blend-mode: screen;
+}
+
+body::before {
+  left: -18vmax;
+  top: -22vmax;
+  background: radial-gradient(circle at 35% 35%, var(--mesh-a) 0%, transparent 66%);
+  animation: meshDriftOne 16s ease-in-out infinite alternate;
+}
+
+body::after {
+  right: -20vmax;
+  bottom: -24vmax;
+  background:
+    radial-gradient(circle at 42% 42%, var(--mesh-b) 0%, transparent 63%),
+    radial-gradient(circle at 62% 60%, var(--mesh-c) 0%, transparent 68%);
+  animation: meshDriftTwo 19s ease-in-out infinite alternate;
 }
 
 .app-shell {
@@ -265,6 +304,30 @@ body {
   transform: translateY(-1px);
 }
 
+@keyframes meshDriftOne {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(10vmax, 5vmax, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(18vmax, 10vmax, 0) scale(1);
+  }
+}
+
+@keyframes meshDriftTwo {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-10vmax, -7vmax, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-18vmax, -12vmax, 0) scale(1);
+  }
+}
+
 @media (max-width: 640px) {
   .app-shell {
     padding: 0.5rem;
@@ -291,5 +354,10 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  body::before,
+  body::after {
+    animation: none !important;
   }
 }
