@@ -1,216 +1,200 @@
 const form = document.getElementById("ifrm");
 const input = document.getElementById("urlTxt");
-const button = document.getElementById("btn-grab");
+const btnGrab = document.getElementById("btn-grab");
 const statusEl = document.getElementById("status");
 const iframe = document.getElementById("youtube");
-const selectSection = document.getElementById("select");
-const thumbnailGrid = document.querySelector(".thumbnail-grid");
-const copyButton = document.getElementById("copyBtn");
+const resultsSection = document.getElementById("results");
+const thumbnailGrid = document.getElementById("thumbnailGrid");
+const copyBtn = document.getElementById("copyBtn");
 const themeToggle = document.getElementById("themeToggle");
+const videoLoader = document.getElementById("videoLoader");
+const toastContainer = document.getElementById("toastContainer");
 
 let currentVideoId = "";
 
-const currentTheme = localStorage.getItem("theme");
-if (currentTheme) {
-  document.documentElement.setAttribute("data-theme", currentTheme);
-  document.documentElement.setAttribute("data-bs-theme", currentTheme);
-  themeToggle.setAttribute("aria-label", currentTheme === "light" ? "Switch to dark mode" : "Switch to light mode");
-} else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
-  document.documentElement.setAttribute("data-theme", "light");
-  document.documentElement.setAttribute("data-bs-theme", "light");
-  themeToggle.setAttribute("aria-label", "Switch to dark mode");
-} else {
-  document.documentElement.setAttribute("data-bs-theme", "dark");
-}
+// --- THEME MANAGEMENT ---
+const initTheme = () => {
+  const savedTheme = localStorage.getItem("theme");
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+};
+initTheme();
 
 themeToggle.addEventListener("click", () => {
-  let theme = document.documentElement.getAttribute("data-theme");
-  if (theme === "light") {
-    document.documentElement.removeAttribute("data-theme");
-    document.documentElement.setAttribute("data-bs-theme", "dark");
-    localStorage.setItem("theme", "dark");
-    themeToggle.setAttribute("aria-label", "Switch to light mode");
-  } else {
-    document.documentElement.setAttribute("data-theme", "light");
-    document.documentElement.setAttribute("data-bs-theme", "light");
-    localStorage.setItem("theme", "light");
-    themeToggle.setAttribute("aria-label", "Switch to dark mode");
-  }
+  document.documentElement.classList.toggle("dark");
+  localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
 });
 
-function setStatus(message, type) {
-  statusEl.textContent = message;
-  statusEl.classList.remove("ok", "error");
+// --- TOAST NOTIFICATIONS ---
+const showToast = (message, type = "success") => {
+  const toast = document.createElement("div");
+  const bgClass = type === "success" ? "bg-emerald-500" : (type === "error" ? "bg-red-500" : "bg-brand-500");
+  const iconClass = type === "success" ? "ph-check-circle" : (type === "error" ? "ph-warning-circle" : "ph-info");
+  toast.className = `toast flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium shadow-xl ${bgClass}`;
+  toast.innerHTML = `<i class="ph-fill ${iconClass} text-xl"></i><span>${message}</span>`;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add("hiding");
+    toast.addEventListener("animationend", () => toast.remove());
+  }, 3000);
+};
 
-  if (type) {
-    statusEl.classList.add(type);
-  }
-}
+// --- CORE LOGIC ---
+const setStatus = (msg, type = "info") => {
+  statusEl.textContent = msg;
+  statusEl.style.opacity = msg ? "1" : "0";
+  statusEl.className = `mt-4 text-sm font-medium h-5 transition-all ${type === "error" ? "text-red-500" : type === "success" ? "text-emerald-500" : "text-brand-500"}`;
+};
 
-function getYouTubeId(urlText) {
-  const value = (urlText || "").trim();
-
-  if (!value) return null;
-
-  // Exact 11-char match
-  if (/^[a-zA-Z0-9_-]{11}$/.test(value)) {
-    return value;
-  }
-
-  // Modern and robust regex for YouTube domains and youtu.be short links
+const getYouTubeId = (url) => {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-  const match = value.match(regex);
-  
-  if (match && match[1]) {
-    return match[1];
-  }
+  const match = url.match(regex);
+  return match && match[1] ? match[1] : (url.length === 11 ? url : null);
+};
 
-  return null;
-}
-
-function buildThumbnailUrl(videoId, name) {
-  return `https://img.youtube.com/vi/${videoId}/${name}`;
-}
-
-async function downloadThumbnail(url, filename) {
+const triggerDownload = async (url, filename, btn) => {
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Fetching...`;
+  btn.disabled = true;
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Network response was not ok");
+    if (!response.ok) throw new Error("Image proxy error");
     const blob = await response.blob();
-    const objectUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = objectUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(objectUrl);
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objUrl);
+    showToast(`Downloaded ${filename}`);
   } catch (error) {
-    console.error("Download failed, opening in new tab instead.", error);
+    showToast("Failed to download directly. Opening in new tab.", "info");
     window.open(url, "_blank");
+  } finally {
+    btn.innerHTML = originalHtml;
+    btn.disabled = false;
   }
-}
+};
 
-function renderThumbnailCards(videoId) {
-  const thumbnailFiles = [
-    "0.jpg",
-    "1.jpg",
-    "2.jpg",
-    "3.jpg",
-    "default.jpg",
-    "mqdefault.jpg",
-    "hqdefault.jpg",
-    "sddefault.jpg",
-    "maxresdefault.jpg"
+const fallbackCopyToClipboard = (text) => {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    document.execCommand("copy");
+    showToast("Copied to clipboard!");
+  } catch (err) {
+    showToast("Failed to copy", "error");
+  }
+  document.body.removeChild(textArea);
+};
+
+const copyToClipboard = async (text) => {
+  if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Copied to clipboard!");
+    } catch (err) {
+      fallbackCopyToClipboard(text);
+    }
+  } else {
+    fallbackCopyToClipboard(text);
+  }
+};
+
+copyBtn.addEventListener("click", () => {
+  if (currentVideoId) copyToClipboard(currentVideoId);
+});
+
+const renderThumbnails = (videoId) => {
+  const formats = [
+    { file: "maxresdefault.jpg", name: "Maximum Resolution", badge: "HD", color: "bg-brand-500" },
+    { file: "hqdefault.jpg", name: "High Quality", badge: "HQ", color: "bg-purple-500" },
+    { file: "sddefault.jpg", name: "Standard Definition", badge: "SD", color: "bg-blue-500" },
+    { file: "mqdefault.jpg", name: "Medium Quality", badge: "MQ", color: "bg-emerald-500" },
+    { file: "default.jpg", name: "Default", badge: "Normal", color: "bg-surface-500" },
+    { file: "0.jpg", name: "Player Background", badge: "bg", color: "bg-amber-500" },
+    { file: "1.jpg", name: "Start Frame", badge: "thumb", color: "bg-rose-500" },
+    { file: "2.jpg", name: "Middle Frame", badge: "thumb", color: "bg-rose-500" },
+    { file: "3.jpg", name: "End Frame", badge: "thumb", color: "bg-rose-500" }
   ];
-
   thumbnailGrid.innerHTML = "";
-
-  thumbnailFiles.forEach((fileName) => {
-    const imageUrl = buildThumbnailUrl(videoId, fileName);
-    const downloadName = `${videoId}-${fileName}`;
-
-    const item = document.createElement("li");
-    item.className = "col-12 col-sm-6 col-md-4";
-    item.innerHTML = `
-      <div class="card h-100 shadow-sm overflow-hidden border-secondary-subtle">
-        <img src="${imageUrl}" alt="Thumbnail ${fileName}" loading="lazy" class="card-img-top object-fit-cover" style="aspect-ratio: 16/9; background-color: var(--bs-secondary-bg);" />
-        <div class="card-body d-flex flex-column">
-          <h6 class="card-title text-truncate mb-3" title="${fileName}">${fileName}</h6>
-          <div class="d-flex gap-2 w-100 mt-auto">
-            <button class="btn btn-primary btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center download-btn" data-url="${imageUrl}" data-filename="${downloadName}">
-              <img src="https://img.icons8.com/3d-fluency/48/download.png" alt="Download" width="16" height="16" class="me-1">
-              Download
-            </button>
-            <button class="btn btn-outline-secondary btn-sm fw-bold flex-grow-1 d-flex align-items-center justify-content-center copy-link-btn" data-url="${imageUrl}">
-              <img src="https://img.icons8.com/deco/48/copy.png" alt="Copy" width="16" height="16" class="me-1 copy-icon">
-              Copy Link
-            </button>
-          </div>
+  formats.forEach((fmt, index) => {
+    const imgUrl = `https://img.youtube.com/vi/${videoId}/${fmt.file}`;
+    const li = document.createElement("li");
+    li.style.animationDelay = `${index * 0.1}s`;
+    li.className = "thumbnail-card animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col";
+    li.innerHTML = `
+      <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
+        <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
+        <div class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-md text-white shadow-md ${fmt.color}">${fmt.badge}</div>
+      </div>
+      <div class="p-5 flex flex-col flex-grow">
+        <h3 class="font-display font-bold text-lg mb-1 dark:text-white">${fmt.name}</h3>
+        <p class="text-xs text-surface-500 dark:text-surface-400 mb-4 font-mono">${fmt.file}</p>
+        <div class="mt-auto flex gap-2">
+          <button class="download-btn flex-1 bg-surface-100 hover:bg-brand-500 hover:text-white text-surface-700 dark:text-surface-200 dark:bg-surface-800 dark:hover:bg-brand-500 font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
+            <i class="ph-bold ph-download-simple"></i><span>Wait...</span>
+          </button>
+          <button class="copy-link-btn w-12 flex-shrink-0 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:text-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center">
+            <i class="ph-bold ph-link"></i>
+          </button>
         </div>
       </div>
     `;
-
-    // Extract the button and attach the fetch API download handler
-    const downloadBtn = item.querySelector('.download-btn');
-    downloadBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      const originalHTML = downloadBtn.innerHTML;
-      downloadBtn.disabled = true;
-      downloadBtn.innerHTML = '<img src="https://img.icons8.com/3d-fluency/48/hourglass.png" alt="Wait" width="16" height="16" class="me-1">...';
-
-      downloadThumbnail(imageUrl, downloadName).finally(() => {
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = originalHTML;
-      });
-    });
-
-    const copyLinkBtn = item.querySelector('.copy-link-btn');
-    copyLinkBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-        await navigator.clipboard.writeText(imageUrl);
-        const originalHTML = copyLinkBtn.innerHTML;
-        copyLinkBtn.innerHTML = '<img src="https://img.icons8.com/3d-fluency/48/ok.png" alt="OK" width="16" height="16" class="me-1">Copied!';
-        copyLinkBtn.classList.replace('btn-outline-secondary', 'btn-success');
-        copyLinkBtn.classList.replace('text-body', 'text-white');
-        
-        setTimeout(() => {
-          copyLinkBtn.innerHTML = originalHTML;
-          copyLinkBtn.classList.replace('btn-success', 'btn-outline-secondary');
-        }, 2000);
-      } catch (err) {
-        setStatus("Clipboard access failed.", "error");
+    const dBtn = li.querySelector(".download-btn");
+    const dSpan = dBtn.querySelector("span");
+    const imgCheck = new Image();
+    imgCheck.onload = () => {
+      if (imgCheck.width === 120 && imgCheck.height === 90) {
+         dBtn.disabled = true;
+         dBtn.classList.add("opacity-50", "cursor-not-allowed");
+         dBtn.classList.remove("hover:bg-brand-500", "hover:text-white");
+         dSpan.textContent = "Unavailable";
+      } else {
+         dSpan.textContent = "Save";
+         dBtn.addEventListener("click", () => triggerDownload(imgUrl, `${videoId}-${fmt.file}`, dBtn));
       }
-    });
-
-    thumbnailGrid.appendChild(item);
+    };
+    imgCheck.onerror = () => { dBtn.disabled = true; dSpan.textContent = "Error"; };
+    imgCheck.src = imgUrl;
+    li.querySelector(".copy-link-btn").addEventListener("click", () => copyToClipboard(imgUrl));
+    thumbnailGrid.appendChild(li);
   });
-}
+};
 
-function updatePreview(videoId) {
-  iframe.src = `https://www.youtube.com/embed/${videoId}`;
-}
-
-function resetOutput() {
-  thumbnailGrid.innerHTML = "";
-  iframe.removeAttribute("src");
-  selectSection.hidden = true;
-  currentVideoId = "";
-}
-
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  button.disabled = true;
-
-  const videoId = getYouTubeId(input.value);
-
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const url = input.value.trim();
+  const videoId = getYouTubeId(url);
   if (!videoId) {
-    resetOutput();
-    setStatus("Please enter a valid YouTube URL or 11-character video ID.", "error");
-    button.disabled = false;
+    setStatus("Invalid YouTube URL.", "error");
+    input.focus();
     return;
   }
-
   currentVideoId = videoId;
-  updatePreview(videoId);
-  renderThumbnailCards(videoId);
-  selectSection.hidden = false;
-  setStatus("Thumbnails loaded. Pick any version and download.", "ok");
-  button.disabled = false;
-});
-
-copyButton.addEventListener("click", async () => {
-  if (!currentVideoId) {
-    setStatus("Load a video first to copy the ID.", "error");
-    return;
-  }
-
-  try {
-    await navigator.clipboard.writeText(currentVideoId);
-    setStatus("Video ID copied to clipboard.", "ok");
-  } catch (error) {
-    setStatus("Clipboard access failed. You can copy the ID manually.", "error");
-  }
+  setStatus("Extracting resources...", "success");
+  btnGrab.disabled = true;
+  btnGrab.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Processing`;
+  resultsSection.classList.add("hidden", "opacity-0");
+  setTimeout(() => {
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.onload = () => { iframe.classList.remove("opacity-0"); videoLoader.classList.add("hidden"); };
+    renderThumbnails(videoId);
+    btnGrab.disabled = false;
+    btnGrab.innerHTML = `<span>Extract</span><i class="ph-bold ph-arrow-right"></i>`;
+    resultsSection.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      resultsSection.classList.remove("opacity-0");
+      setStatus("", "");
+      resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, 600);
 });
