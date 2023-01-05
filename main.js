@@ -10,6 +10,11 @@ const themeToggle = document.getElementById("themeToggle");
 const videoLoader = document.getElementById("videoLoader");
 const toastContainer = document.getElementById("toastContainer");
 
+// Elements for Smart Analysis
+const analysisBadge = document.getElementById("smartAnalysisBadge");
+const analysisIcon = document.getElementById("analysisIcon");
+const analysisText = document.getElementById("analysisText");
+
 let currentVideoId = "";
 
 // --- THEME MANAGEMENT ---
@@ -54,6 +59,43 @@ const getYouTubeId = (url) => {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
   const match = url.match(regex);
   return match && match[1] ? match[1] : (url.length === 11 ? url : null);
+};
+
+const runSmartAnalysis = (videoId) => {
+  analysisBadge.classList.replace("hidden", "flex");
+  analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-surface-100 dark:bg-surface-800 text-surface-500 animate-pulse";
+  analysisIcon.className = "ph-bold ph-spinner animate-spin";
+  analysisText.textContent = "Analyzing source...";
+
+  const maxResUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  const imgCheck = new Image();
+
+  imgCheck.onload = () => {
+    if (imgCheck.width === 120 && imgCheck.height === 90) {
+      // It's the fallback unavailable image
+      analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-amber-100/50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 animate-slide-up";
+      analysisIcon.className = "ph-fill ph-warning-circle";
+      analysisText.innerHTML = "Sub-HD only (Max Quality Unavailable)";
+    } else {
+      // HD / 4K is available
+      const is4K = imgCheck.width >= 1920;
+      const resLabel = is4K ? "4K UHD" : "Max HD";
+      analysisBadge.className = `flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition animate-slide-up ${
+        is4K ? 'bg-purple-100/50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50' 
+             : 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50'
+      }`;
+      analysisIcon.className = "ph-fill ph-check-circle";
+      analysisText.innerHTML = `<span class="font-bold">${resLabel}</span> available • ${Math.max(imgCheck.width, 1280)}x${Math.max(imgCheck.height, 720)}`;
+    }
+  };
+  
+  imgCheck.onerror = () => {
+    analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-red-100/50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 animate-slide-up";
+    analysisIcon.className = "ph-fill ph-x-circle";
+    analysisText.textContent = "Analysis failed";
+  };
+  
+  imgCheck.src = maxResUrl;
 };
 
 const triggerDownload = async (url, filename, btn) => {
@@ -184,9 +226,15 @@ form.addEventListener("submit", (e) => {
   btnGrab.disabled = true;
   btnGrab.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Processing`;
   resultsSection.classList.add("hidden", "opacity-0");
+  if(analysisBadge) analysisBadge.classList.replace("flex", "hidden");
+  
   setTimeout(() => {
     iframe.src = `https://www.youtube.com/embed/${videoId}`;
     iframe.onload = () => { iframe.classList.remove("opacity-0"); videoLoader.classList.add("hidden"); };
+    
+    // Execute Smart Analysis
+    runSmartAnalysis(videoId);
+    
     renderThumbnails(videoId);
     btnGrab.disabled = false;
     btnGrab.innerHTML = `<span>Extract</span><i class="ph-bold ph-arrow-right"></i>`;
