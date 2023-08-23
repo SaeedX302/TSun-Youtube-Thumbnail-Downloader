@@ -15,6 +15,11 @@ const analysisBadge = document.getElementById("smartAnalysisBadge");
 const analysisIcon = document.getElementById("analysisIcon");
 const analysisText = document.getElementById("analysisText");
 
+// Elements for History
+const searchHistoryContainer = document.getElementById("searchHistoryContainer");
+const historyList = document.getElementById("historyList");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
 let currentVideoId = "";
 
 // --- THEME MANAGEMENT ---
@@ -60,6 +65,62 @@ const getYouTubeId = (url) => {
   const match = url.match(regex);
   return match && match[1] ? match[1] : (url.length === 11 ? url : null);
 };
+
+// --- DATA PERSISTENCE ---
+const MAX_HISTORY = 5;
+
+const loadHistory = () => JSON.parse(localStorage.getItem("tsun_history") || "[]");
+const saveHistory = (items) => localStorage.setItem("tsun_history", JSON.stringify(items));
+
+const addSearchToHistory = (videoId, title = "Unknown Video") => {
+  let history = loadHistory();
+  history = history.filter(item => item.id !== videoId); // Remove duplicates
+  history.unshift({ id: videoId, title: "Video " + videoId, timestamp: Date.now() }); // Prepend
+  if (history.length > MAX_HISTORY) history.pop(); // Keep only max
+  saveHistory(history);
+  renderSearchHistory();
+};
+
+const renderSearchHistory = () => {
+  const history = loadHistory();
+  
+  if (history.length === 0) {
+    searchHistoryContainer.classList.add("hidden");
+    return;
+  }
+  
+  searchHistoryContainer.classList.remove("hidden");
+  historyList.innerHTML = "";
+  
+  history.forEach((item) => {
+    const thumbUrl = `https://img.youtube.com/vi/${item.id}/default.jpg`;
+    const btn = document.createElement("button");
+    btn.className = "group flex items-center bg-white dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700 rounded-lg p-1.5 pr-4 shadow-sm transition gap-3";
+    btn.innerHTML = `
+      <img src="${thumbUrl}" alt="Thumbnail" class="w-12 h-8 rounded object-cover">
+      <span class="text-sm font-medium text-surface-700 dark:text-surface-300">${item.id}</span>
+      <i class="ph-bold ph-arrow-right text-brand-500 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+    `;
+    
+    // When a history item is clicked, run extraction process on it
+    btn.addEventListener("click", () => {
+      input.value = `https://youtube.com/watch?v=${item.id}`;
+      // Trigger extraction flow natively using fake submit
+      form.dispatchEvent(new Event('submit'));
+    });
+    
+    historyList.appendChild(btn);
+  });
+};
+
+clearHistoryBtn.addEventListener("click", () => {
+  localStorage.removeItem("tsun_history");
+  renderSearchHistory();
+  showToast("History cleared", "info");
+});
+
+// Initialize history on page load
+renderSearchHistory();
 
 const runSmartAnalysis = (videoId) => {
   analysisBadge.classList.replace("hidden", "flex");
@@ -227,6 +288,9 @@ form.addEventListener("submit", (e) => {
   btnGrab.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Processing`;
   resultsSection.classList.add("hidden", "opacity-0");
   if(analysisBadge) analysisBadge.classList.replace("flex", "hidden");
+
+  // Save successful search to history
+  addSearchToHistory(videoId);
   
   setTimeout(() => {
     iframe.src = `https://www.youtube.com/embed/${videoId}`;
