@@ -1,24 +1,4 @@
-/* Entirely new polished custom CSS matching the neo-brutal/glassmorphism vibe */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -39,35 +19,11 @@ body {
   background: rgba(75, 85, 99, 0.6);
 }
 
-/* Base styles for status text */
-.status-ok {
-  color: #10b981; /* Emerald 500 */
-}
-.status-error {
-  color: #ef4444; /* Red 500 */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Thumbnails */
-.thumbnail-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.thumbnail-card:hover {
-  transform: translateY(-8px);
-}
-
-.toast {
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.toast.hiding {
-  animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
+body {
+  overflow-x: hidden;
 }

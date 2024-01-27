@@ -44,11 +44,13 @@ const showToast = (message, type = "success") => {
   const toast = document.createElement("div");
   const bgClass = type === "success" ? "bg-emerald-500" : (type === "error" ? "bg-red-500" : "bg-brand-500");
   const iconClass = type === "success" ? "ph-check-circle" : (type === "error" ? "ph-warning-circle" : "ph-info");
-  toast.className = `toast flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium shadow-xl ${bgClass}`;
+  toast.className = `animate-slide-in flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium shadow-xl ${bgClass}`;
   toast.innerHTML = `<i class="ph-fill ${iconClass} text-xl"></i><span>${message}</span>`;
   toastContainer.appendChild(toast);
+
   setTimeout(() => {
-    toast.classList.add("hiding");
+    toast.classList.remove("animate-slide-in");
+    toast.classList.add("animate-slide-out");
     toast.addEventListener("animationend", () => toast.remove());
   }, 3000);
 };
@@ -233,7 +235,7 @@ const renderThumbnails = (videoId) => {
     const imgUrl = `https://img.youtube.com/vi/${videoId}/${fmt.file}`;
     const li = document.createElement("li");
     li.style.animationDelay = `${index * 0.1}s`;
-    li.className = "thumbnail-card animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col";
+    li.className = "animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl";
     li.innerHTML = `
       <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
         <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
