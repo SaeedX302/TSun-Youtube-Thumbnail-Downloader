@@ -1,0 +1,17 @@
+{
+  "name": "TSun Thumbnail Pro",
+  "short_name": "TSun Pro",
+  "description": "Download YouTube thumbnails flawlessly.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

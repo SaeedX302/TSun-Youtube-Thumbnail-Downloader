@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#8b5cf6" />
+  <link rel="apple-touch-icon" href="icon.svg" />
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -98,10 +101,16 @@
         <span class="font-display font-bold text-xl tracking-tight">TSun Thumbnail <span class="text-brand-500">Pro</span></span>
       </div>
       
-      <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all duration-300 hover:scale-105 border border-surface-200 dark:border-surface-700">
-        <i class="ph-bold ph-sun text-xl hidden dark:block text-amber-400"></i>
-        <i class="ph-bold ph-moon text-xl block dark:hidden text-indigo-500"></i>
-      </button>
+        <div class="flex flex-row items-center gap-3">
+          <button id="btnInstall" class="hidden items-center gap-2 px-4 py-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 hover:bg-brand-500/20 rounded-xl font-medium transition-all group">
+            <i class="ph ph-download-simple mb-[1px] text-xl group-hover:-translate-y-1 transition-transform"></i>
+            <span class="hidden sm:inline">Install App</span>
+          </button>
+          <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all duration-300 hover:scale-105 border border-surface-200 dark:border-surface-700">
+            <i class="ph-bold ph-sun text-xl hidden dark:block text-amber-400"></i>
+            <i class="ph-bold ph-moon text-xl block dark:hidden text-indigo-500"></i>
+          </button>
+        </div>
     </header>
 
     <!-- Main Content -->
