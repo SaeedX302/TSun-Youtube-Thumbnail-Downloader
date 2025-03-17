@@ -101,8 +101,11 @@
         <span class="font-display font-bold text-xl tracking-tight">TSun Thumbnail <span class="text-brand-500">Pro</span></span>
       </div>
       
-        <div class="flex flex-row items-center gap-3">
-          <button id="btnInstall" class="hidden items-center gap-2 px-4 py-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 hover:bg-brand-500/20 rounded-xl font-medium transition-all group">
+          <div class="flex flex-row items-center gap-3">
+            <button id="btnChangelog" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-100 dark:bg-surface-800 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 transition-all duration-300 hover:scale-105 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300">
+              <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
+            </button>
+            <button id="btnInstall" class="hidden items-center gap-2 px-4 py-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 hover:bg-brand-500/20 rounded-xl font-medium transition-all group">
             <i class="ph ph-download-simple mb-[1px] text-xl group-hover:-translate-y-1 transition-transform"></i>
             <span class="hidden sm:inline">Install App</span>
           </button>
@@ -218,7 +221,7 @@
     <footer class="w-full border-t border-surface-200 dark:border-surface-800 py-8 mt-auto backdrop-blur-sm">
       <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p class="text-surface-500 dark:text-surface-400 font-medium text-sm">
-          &copy; 2024 TSun Thumbnail Pro. Crafted for Creators. | Version 8.1.0
+          &copy; 2025 TSun Thumbnail Pro. Crafted for Creators. | Version 25.03.17
         </p>
         <div class="flex items-center gap-6">
           <a href="https://github.com/SaeedX302" target="_blank" class="text-surface-400 hover:text-surface-900 dark:hover:text-white transition transform hover:scale-110">
@@ -230,6 +233,59 @@
         </div>
       </div>
     </footer>
+  </div>
+
+  <!-- Changelog Modal -->
+  <div id="changelogModal" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center p-4">
+    <div id="changelogBackdrop" class="absolute inset-0 bg-surface-900/60 backdrop-blur-sm transition-opacity opacity-0"></div>
+    <div id="changelogContent" class="relative bg-white dark:bg-surface-900 w-full max-w-lg rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-800 transition-all transform scale-95 opacity-0 overflow-hidden flex flex-col max-h-[80vh]">
+      <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between bg-surface-50 dark:bg-surface-950">
+        <h2 class="text-xl font-display font-bold text-surface-900 dark:text-white flex items-center gap-2">
+          <i class="ph-bold ph-rocket-launch text-brand-500"></i>
+          Update History
+        </h2>
+        <button id="btnCloseChangelog" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow custom-scrollbar">
+        <div class="space-y-6">
+          <div class="relative pl-6 border-l-2 border-brand-500/30">
+            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></div>
+            <h3 class="text-sm font-bold text-brand-600 dark:text-brand-400 mb-1">v25.03.17 (2025)</h3>
+            <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
+              <li>Integrated sleek Changelog Modal UI with animations</li>
+              <li>Site updated to 2025 conventions</li>
+            </ul>
+          </div>
+          <div class="relative pl-6 border-l-2 border-surface-200 dark:border-surface-800">
+            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-surface-300 dark:bg-surface-700"></div>
+            <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">v8.1.0 (2024)</h3>
+            <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
+              <li>Added full PWA configuration & mobile install prompts</li>
+              <li>Search History functionality via local storage</li>
+              <li>Service worker caching support for offline functionality</li>
+            </ul>
+          </div>
+          <div class="relative pl-6 border-l-2 border-surface-200 dark:border-surface-800">
+            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-surface-300 dark:bg-surface-700"></div>
+            <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">v8.0.0 (2023)</h3>
+            <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
+              <li>Smart Image Resolution Detection to check 4K vs HD availability</li>
+              <li>Year update & Version bump</li>
+            </ul>
+          </div>
+          <div class="relative pl-6 border-l-2 border-surface-200 dark:border-surface-800">
+            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-surface-300 dark:bg-surface-700"></div>
+            <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">v7.0.22 (2022)</h3>
+            <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
+              <li>Total UI Redesign targeting "0 to 100" aesthetic overhauls</li>
+              <li>Complete responsive fixes across all mobile & desktop views</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Container -->

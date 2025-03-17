@@ -354,3 +354,36 @@ window.addEventListener('appinstalled', () => {
   btnInstall.classList.add('hidden');
   showToast('App installed successfully!');
 });
+
+// --- CHANGELOG MODAL CONTROLS ---
+const btnChangelog = document.getElementById('btnChangelog');
+const changelogModal = document.getElementById('changelogModal');
+const changelogBackdrop = document.getElementById('changelogBackdrop');
+const changelogContent = document.getElementById('changelogContent');
+const btnCloseChangelog = document.getElementById('btnCloseChangelog');
+
+const openChangelog = () => {
+  changelogModal.classList.remove('hidden');
+  // trigger reflow
+  void changelogModal.offsetWidth;
+  // Apply animations
+  changelogBackdrop.classList.remove('opacity-0');
+  changelogBackdrop.classList.add('opacity-100');
+  changelogContent.classList.remove('opacity-0', 'scale-95');
+  changelogContent.classList.add('opacity-100', 'scale-100');
+};
+
+const closeChangelog = () => {
+  changelogBackdrop.classList.remove('opacity-100');
+  changelogBackdrop.classList.add('opacity-0');
+  changelogContent.classList.remove('opacity-100', 'scale-100');
+  changelogContent.classList.add('opacity-0', 'scale-95');
+  
+  setTimeout(() => {
+    changelogModal.classList.add('hidden');
+  }, 300); // Matches Tailwind transition duration default
+};
+
+btnChangelog.addEventListener('click', openChangelog);
+btnCloseChangelog.addEventListener('click', closeChangelog);
+changelogBackdrop.addEventListener('click', closeChangelog);
