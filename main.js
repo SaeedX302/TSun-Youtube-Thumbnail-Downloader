@@ -5,12 +5,14 @@ const statusEl = document.getElementById("status");
 const iframe = document.getElementById("youtube");
 const resultsSection = document.getElementById("results");
 const thumbnailGrid = document.getElementById("thumbnailGrid");
-const copyBtn = document.getElementById("copyBtn");
-const themeToggle = document.getElementById("themeToggle");
-const videoLoader = document.getElementById("videoLoader");
-const toastContainer = document.getElementById("toastContainer");
+const downloadAllSection = document.getElementById("downloadAllSection");
+const btnDownloadAll = document.getElementById("btnDownloadAll");
+const txtDownloadAll = document.getElementById("txtDownloadAll");
+const zipProgressWrapper = document.getElementById("zipProgressWrapper");
+const zipStatusText = document.getElementById("zipStatusText");
+const zipPercentage = document.getElementById("zipPercentage");
+const zipProgressBar = document.getElementById("zipProgressBar");
 
-// Elements for Smart Analysis
 const analysisBadge = document.getElementById("smartAnalysisBadge");
 const analysisIcon = document.getElementById("analysisIcon");
 const analysisText = document.getElementById("analysisText");
@@ -161,6 +163,93 @@ const runSmartAnalysis = (videoId) => {
   imgCheck.src = maxResUrl;
 };
 
+let currentAvailableThumbs = [];
+
+const downloadAllAsZip = async () => {
+  if (!currentAvailableThumbs.length) return;
+  
+  if (typeof JSZip === 'undefined') {
+    showToast("Zip component not loaded properly. Please refresh.", "error");
+    return;
+  }
+
+  btnDownloadAll.disabled = true;
+  btnDownloadAll.classList.add("opacity-50", "pointer-events-none");
+  txtDownloadAll.textContent = "Processing...";
+  zipProgressWrapper.classList.remove("hidden");
+  
+  // allow DOM repaint
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  zipProgressWrapper.classList.remove("translate-y-2", "opacity-0");
+
+  try {
+    const zip = new JSZip();
+    let completed = 0;
+    const total = currentAvailableThumbs.length;
+
+    // Fetch all thumbnails and add to zip
+    for (const thumb of currentAvailableThumbs) {
+      zipStatusText.textContent = `Gathering ${thumb.filename}...`;
+      try {
+        const response = await fetch(thumb.url);
+        if (!response.ok) throw new Error("Image fetch error");
+        const blob = await response.blob();
+        zip.file(thumb.filename, blob);
+      } catch (err) {
+        console.warn(`Failed to fetch ${thumb.filename}`, err);
+      }
+      
+      completed++;
+      const percent = Math.round((completed / total) * 50); // Fetching is 50%
+      zipPercentage.textContent = `${percent}%`;
+      zipProgressBar.style.width = `${percent}%`;
+    }
+
+    zipStatusText.textContent = "Compressing archive...";
+    
+    // Generate zip
+    const zipContent = await zip.generateAsync({ type: "blob" }, (metadata) => {
+      const currentPercent = 50 + Math.round(metadata.percent / 2); // Gen is remaining 50%
+      zipPercentage.textContent = `${currentPercent}%`;
+      zipProgressBar.style.width = `${currentPercent}%`;
+    });
+
+    zipStatusText.textContent = "Finalizing download...";
+    
+    // Trigger download
+    const objUrl = URL.createObjectURL(zipContent);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = `TSun-Thumbnails-${currentVideoId}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objUrl);
+    
+    showToast("Download Complete!", "success");
+    
+  } catch (error) {
+    showToast("Error creating .zip file", "error");
+    console.error(error);
+  } finally {
+    // Reset UI
+    setTimeout(() => {
+      zipProgressWrapper.classList.add("opacity-0", "translate-y-2");
+      setTimeout(() => {
+        zipProgressWrapper.classList.add("hidden");
+        zipPercentage.textContent = "0%";
+        zipProgressBar.style.width = "0%";
+      }, 300);
+      
+      btnDownloadAll.disabled = false;
+      btnDownloadAll.classList.remove("opacity-50", "pointer-events-none");
+      txtDownloadAll.textContent = "Download All (.zip)";
+    }, 1500);
+  }
+};
+
+btnDownloadAll.addEventListener("click", downloadAllAsZip);
+
 const triggerDownload = async (url, filename, btn) => {
   const originalHtml = btn.innerHTML;
   btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Fetching...`;
@@ -230,52 +319,68 @@ const renderThumbnails = (videoId) => {
     { file: "2.jpg", name: "Middle Frame", badge: "thumb", color: "bg-rose-500" },
     { file: "3.jpg", name: "End Frame", badge: "thumb", color: "bg-rose-500" }
   ];
-  thumbnailGrid.innerHTML = "";
-  formats.forEach((fmt, index) => {
-    const imgUrl = `https://img.youtube.com/vi/${videoId}/${fmt.file}`;
-    const li = document.createElement("li");
-    li.style.animationDelay = `${index * 0.1}s`;
-    li.className = "animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl";
-    li.innerHTML = `
-      <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
-        <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
-        <div class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-md text-white shadow-md ${fmt.color}">${fmt.badge}</div>
-      </div>
-      <div class="p-5 flex flex-col flex-grow">
-        <h3 class="font-display font-bold text-lg mb-1 dark:text-white">${fmt.name}</h3>
-        <p class="text-xs text-surface-500 dark:text-surface-400 mb-4 font-mono">${fmt.file}</p>
-        <div class="mt-auto flex gap-2">
-          <button class="download-btn flex-1 bg-surface-100 hover:bg-brand-500 hover:text-white text-surface-700 dark:text-surface-200 dark:bg-surface-800 dark:hover:bg-brand-500 font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-            <i class="ph-bold ph-download-simple"></i><span>Wait...</span>
-          </button>
-          <button class="copy-link-btn w-12 flex-shrink-0 bg-surface-100 hover:bg-surface-200 text-surface-700 dark:text-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center">
-            <i class="ph-bold ph-link"></i>
-          </button>
-        </div>
-      </div>
-    `;
-    const dBtn = li.querySelector(".download-btn");
-    const dSpan = dBtn.querySelector("span");
-    const imgCheck = new Image();
-    imgCheck.onload = () => {
-      if (imgCheck.width === 120 && imgCheck.height === 90) {
-         dBtn.disabled = true;
-         dBtn.classList.add("opacity-50", "cursor-not-allowed");
-         dBtn.classList.remove("hover:bg-brand-500", "hover:text-white");
-         dSpan.textContent = "Unavailable";
-      } else {
-         dSpan.textContent = "Save";
-         dBtn.addEventListener("click", () => triggerDownload(imgUrl, `${videoId}-${fmt.file}`, dBtn));
-      }
-    };
-    imgCheck.onerror = () => { dBtn.disabled = true; dSpan.textContent = "Error"; };
-    imgCheck.src = imgUrl;
-    li.querySelector(".copy-link-btn").addEventListener("click", () => copyToClipboard(imgUrl));
-    thumbnailGrid.appendChild(li);
-  });
-};
+    thumbnailGrid.innerHTML = "";
+    currentAvailableThumbs = [];
+    downloadAllSection.classList.add("hidden");
+    downloadAllSection.classList.remove("opacity-100");
 
-form.addEventListener("submit", (e) => {
+    let promises = formats.map((fmt, index) => {
+      return new Promise((resolve) => {
+        const imgUrl = `https://img.youtube.com/vi/${videoId}/${fmt.file}`;
+        const li = document.createElement("li");
+        li.style.animationDelay = `${index * 0.1}s`;
+        li.className = "animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl";
+        li.innerHTML = `
+          <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
+            <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
+            <div class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-md text-white shadow-md ${fmt.color}">${fmt.badge}</div>
+          </div>
+          <div class="p-5 flex flex-col flex-grow">
+            <h3 class="font-display font-bold text-lg mb-1 dark:text-white flex items-center justify-between">
+              ${fmt.name}
+              <button class="copy-link-btn w-8 h-8 rounded-lg bg-surface-100 hover:bg-brand-500 hover:text-white dark:text-surface-300 dark:bg-surface-800 dark:hover:bg-brand-500 flex items-center justify-center transition-colors" title="Copy Image Link">
+                <i class="ph-bold ph-link"></i>
+              </button>
+            </h3>
+            <p class="text-xs text-surface-500 dark:text-surface-400 font-mono flex items-center gap-2">
+              <span class="status-indicator"><i class="ph ph-spinner animate-spin"></i></span>
+              <span class="opacity-40">•</span>
+              <span>${fmt.file}</span>
+            </p>
+          </div>
+        `;
+        const statusIndicator = li.querySelector(".status-indicator");
+        const imgCheck = new Image();
+        imgCheck.onload = () => {
+          if (imgCheck.width === 120 && imgCheck.height === 90) {
+            statusIndicator.innerHTML = `<span class="text-red-500 dark:text-red-400 font-semibold">Unavailable</span>`;
+            li.classList.add("opacity-50", "grayscale");
+          } else {
+            statusIndicator.innerHTML = `<span class="text-emerald-500 font-semibold"><i class="ph-bold ph-check"></i> Available</span>`;
+            currentAvailableThumbs.push({ url: imgUrl, filename: `${videoId}-${fmt.file}` });
+          }
+          resolve();
+        };
+        imgCheck.onerror = () => { 
+          statusIndicator.innerHTML = `<span class="text-red-500 font-semibold">Error</span>`; 
+          resolve();
+        };
+        imgCheck.src = imgUrl;
+        li.querySelector(".copy-link-btn").addEventListener("click", () => copyToClipboard(imgUrl));
+        thumbnailGrid.appendChild(li);
+      });
+    });
+
+    Promise.all(promises).then(() => {
+      if (currentAvailableThumbs.length > 0) {
+        downloadAllSection.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          downloadAllSection.classList.add("opacity-100");
+          downloadAllSection.classList.remove("opacity-0");
+        });
+      }
+    });
+  };form.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = input.value.trim();
   const videoId = getYouTubeId(url);

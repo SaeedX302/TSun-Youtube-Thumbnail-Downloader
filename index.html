@@ -77,6 +77,9 @@
   </script>
   <link rel="stylesheet" href="style.css" />
   
+  <!-- JSZip -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -209,19 +212,38 @@
             Available Resolutions
           </h2>
           
-          <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="thumbnailGrid">
-            <!-- Injected by JS -->
-          </ul>
-        </div>
-      </section>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="thumbnailGrid">
+              <!-- Injected by JS -->
+            </ul>
 
-    </main>
+            <!-- Download All Section -->
+            <div id="downloadAllSection" class="mt-12 flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-500">
+              <button id="btnDownloadAll" class="px-8 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-bold text-lg shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center gap-3 w-full sm:w-auto">
+                <i class="ph-bold ph-download-simple text-2xl"></i>
+                <span id="txtDownloadAll">Download All (.zip)</span>
+              </button>
+              
+              <!-- Progress Bar -->
+              <div id="zipProgressWrapper" class="w-full max-w-md mt-6 hidden opacity-0 transition-opacity duration-300 translate-y-2">
+                <div class="flex justify-between text-sm font-semibold text-surface-600 dark:text-surface-300 mb-2">
+                  <span id="zipStatusText">Gathering thumbnails...</span>
+                  <span id="zipPercentage">0%</span>
+                </div>
+                <div class="h-3 w-full bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden shadow-inner">
+                  <div id="zipProgressBar" class="h-full bg-gradient-to-r from-brand-400 to-indigo-500 w-0 transition-all duration-300 ease-out relative">
+                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>    </main>
 
     <!-- Footer -->
     <footer class="w-full border-t border-surface-200 dark:border-surface-800 py-8 mt-auto backdrop-blur-sm">
       <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p class="text-surface-500 dark:text-surface-400 font-medium text-sm">
-          &copy; 2025 TSun Thumbnail Pro. Crafted for Creators. | Version 25.03.17
+          &copy; 2025 TSun Thumbnail Pro. Crafted for Creators. | Version 25.11.24
         </p>
         <div class="flex items-center gap-6">
           <a href="https://github.com/SaeedX302" target="_blank" class="text-surface-400 hover:text-surface-900 dark:hover:text-white transition transform hover:scale-110">
@@ -252,7 +274,15 @@
         <div class="space-y-6">
           <div class="relative pl-6 border-l-2 border-brand-500/30">
             <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></div>
-            <h3 class="text-sm font-bold text-brand-600 dark:text-brand-400 mb-1">v25.03.17 (2025)</h3>
+            <h3 class="text-sm font-bold text-brand-600 dark:text-brand-400 mb-1">v25.11.24 (2025)</h3>
+            <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
+              <li>Modern "Download All" Bulk Processing feature via .zip</li>
+              <li>Replaced manual lists with dynamic, real-time image resolution fetching logic</li>
+            </ul>
+          </div>
+          <div class="relative pl-6 border-l-2 border-surface-200 dark:border-surface-800">
+            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-surface-300 dark:bg-surface-700"></div>
+            <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">v25.03.17 (2025)</h3>
             <ul class="list-disc list-inside text-sm text-surface-600 dark:text-surface-300 space-y-1">
               <li>Integrated sleek Changelog Modal UI with animations</li>
               <li>Site updated to 2025 conventions</li>
