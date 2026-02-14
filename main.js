@@ -44,10 +44,12 @@ themeToggle.addEventListener("click", () => {
 // --- TOAST NOTIFICATIONS ---
 const showToast = (message, type = "success") => {
   const toast = document.createElement("div");
-  const bgClass = type === "success" ? "bg-emerald-500" : (type === "error" ? "bg-red-500" : "bg-brand-500");
+  const bgClass = type === "success" ? "bg-emerald-500/20 border-emerald-400 text-emerald-400" : (type === "error" ? "bg-red-500/20 border-red-400 text-red-500" : "bg-brand-500/20 border-brand-500 text-brand-400");
   const iconClass = type === "success" ? "ph-check-circle" : (type === "error" ? "ph-warning-circle" : "ph-info");
-  toast.className = `animate-slide-in flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium shadow-xl ${bgClass}`;
-  toast.innerHTML = `<i class="ph-fill ${iconClass} text-xl"></i><span>${message}</span>`;
+  const shadowClass = type === "success" ? "shadow-[0_0_15px_rgba(16,185,129,0.3)]" : (type === "error" ? "shadow-[0_0_15px_rgba(239,68,68,0.3)]" : "shadow-[0_0_15px_rgba(0,240,255,0.3)]");
+  
+  toast.className = `animate-slide-in flex items-center gap-3 px-5 py-4 rounded-xl font-mono font-bold uppercase tracking-wider border backdrop-blur-xl ${bgClass} ${shadowClass}`;
+  toast.innerHTML = `<i class="ph-bold ${iconClass} text-2xl drop-shadow-[0_0_8px_currentColor]"></i><span>${message}</span>`;
   toastContainer.appendChild(toast);
 
   setTimeout(() => {
@@ -99,11 +101,11 @@ const renderSearchHistory = () => {
   history.forEach((item) => {
     const thumbUrl = `https://img.youtube.com/vi/${item.id}/default.jpg`;
     const btn = document.createElement("button");
-    btn.className = "group flex items-center bg-white dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700 rounded-lg p-1.5 pr-4 shadow-sm transition gap-3";
+    btn.className = "group flex items-center bg-white/90 dark:bg-surface-900/80 hover:bg-surface-100 dark:hover:bg-brand-500/10 border border-surface-200 dark:border-brand-500/20 rounded-xl p-1.5 pr-4 shadow-glass transition-all gap-3 backdrop-blur-sm";
     btn.innerHTML = `
-      <img src="${thumbUrl}" alt="Thumbnail" class="w-12 h-8 rounded object-cover">
-      <span class="text-sm font-medium text-surface-700 dark:text-surface-300">${item.id}</span>
-      <i class="ph-bold ph-arrow-right text-brand-500 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+      <img src="${thumbUrl}" alt="Thumbnail" class="w-12 h-8 rounded border border-surface-700 object-cover">
+      <span class="text-sm font-bold font-mono text-surface-700 dark:text-brand-400">${item.id}</span>
+      <i class="ph-bold ph-arrow-right text-brand-500 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]"></i>
     `;
     
     // When a history item is clicked, run extraction process on it
@@ -128,9 +130,9 @@ renderSearchHistory();
 
 const runSmartAnalysis = (videoId) => {
   analysisBadge.classList.replace("hidden", "flex");
-  analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-surface-100 dark:bg-surface-800 text-surface-500 animate-pulse";
-  analysisIcon.className = "ph-bold ph-spinner animate-spin";
-  analysisText.textContent = "Analyzing source...";
+  analysisBadge.className = "flex text-xs font-bold font-mono tracking-widest uppercase px-4 py-2 border border-brand-500/30 rounded-xl items-center gap-2 shadow-neon-surface backdrop-blur-md transition bg-surface-100 dark:bg-surface-900/80 text-surface-500 animate-pulse";
+  analysisIcon.className = "ph-bold ph-spinner animate-spin text-brand-500 drop-shadow-[0_0_5px_rgba(0,240,255,0.6)]";
+  analysisText.textContent = "Analyzing Source...";
 
   const maxResUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   const imgCheck = new Image();
@@ -138,25 +140,25 @@ const runSmartAnalysis = (videoId) => {
   imgCheck.onload = () => {
     if (imgCheck.width === 120 && imgCheck.height === 90) {
       // It's the fallback unavailable image
-      analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-amber-100/50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 animate-slide-up";
-      analysisIcon.className = "ph-fill ph-warning-circle";
-      analysisText.innerHTML = "Sub-HD only (Max Quality Unavailable)";
+      analysisBadge.className = "flex text-xs font-bold font-mono tracking-widest uppercase px-4 py-2 rounded-xl items-center gap-2 transition bg-amber-500/10 text-amber-500 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.2)] animate-slide-up backdrop-blur-md";
+      analysisIcon.className = "ph-bold ph-warning-circle drop-shadow-[0_0_5px_rgba(245,158,11,0.6)]";
+      analysisText.innerHTML = "Sub-HD only";
     } else {
       // HD / 4K is available
       const is4K = imgCheck.width >= 1920;
       const resLabel = is4K ? "4K UHD" : "Max HD";
-      analysisBadge.className = `flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition animate-slide-up ${
-        is4K ? 'bg-purple-100/50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50' 
-             : 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50'
+      analysisBadge.className = `flex text-xs font-bold font-mono tracking-widest uppercase px-4 py-2 rounded-xl items-center gap-2 transition animate-slide-up backdrop-blur-md ${
+        is4K ? 'bg-purple-500/10 text-purple-400 border border-purple-500/40 shadow-[0_0_15px_rgba(168,85,247,0.3)]'
+             : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
       }`;
-      analysisIcon.className = "ph-fill ph-check-circle";
-      analysisText.innerHTML = `<span class="font-bold">${resLabel}</span> available • ${Math.max(imgCheck.width, 1280)}x${Math.max(imgCheck.height, 720)}`;
+      analysisIcon.className = "ph-bold ph-check-circle drop-shadow-[0_0_5px_currentColor]";
+      analysisText.innerHTML = `<span class="text-white">${resLabel}</span> â€¢ ${Math.max(imgCheck.width, 1280)}x${Math.max(imgCheck.height, 720)}`;
     }
   };
-  
+
   imgCheck.onerror = () => {
-    analysisBadge.className = "flex text-sm font-semibold px-4 py-2 rounded-lg items-center gap-2 shadow-sm transition bg-red-100/50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 animate-slide-up";
-    analysisIcon.className = "ph-fill ph-x-circle";
+    analysisBadge.className = "flex text-xs font-bold font-mono tracking-widest uppercase px-4 py-2 rounded-xl items-center gap-2 transition bg-red-500/10 text-red-500 border border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-slide-up backdrop-blur-md";
+    analysisIcon.className = "ph-bold ph-x-circle drop-shadow-[0_0_5px_rgba(239,68,68,0.6)]";
     analysisText.textContent = "Analysis failed";
   };
   
@@ -309,15 +311,15 @@ copyBtn.addEventListener("click", () => {
 
 const renderThumbnails = (videoId) => {
   const formats = [
-    { file: "maxresdefault.jpg", name: "Maximum Resolution", badge: "HD", color: "bg-brand-500" },
-    { file: "hqdefault.jpg", name: "High Quality", badge: "HQ", color: "bg-purple-500" },
-    { file: "sddefault.jpg", name: "Standard Definition", badge: "SD", color: "bg-blue-500" },
-    { file: "mqdefault.jpg", name: "Medium Quality", badge: "MQ", color: "bg-emerald-500" },
-    { file: "default.jpg", name: "Default", badge: "Normal", color: "bg-surface-500" },
-    { file: "0.jpg", name: "Player Background", badge: "bg", color: "bg-amber-500" },
-    { file: "1.jpg", name: "Start Frame", badge: "thumb", color: "bg-rose-500" },
-    { file: "2.jpg", name: "Middle Frame", badge: "thumb", color: "bg-rose-500" },
-    { file: "3.jpg", name: "End Frame", badge: "thumb", color: "bg-rose-500" }
+    { file: "maxresdefault.jpg", name: "Maximum Resolution", badge: "HD", color: "bg-brand-500 shadow-[0_0_10px_rgba(0,240,255,0.6)]" },
+    { file: "hqdefault.jpg", name: "High Quality", badge: "HQ", color: "bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.6)]" },
+    { file: "sddefault.jpg", name: "Standard Definition", badge: "SD", color: "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]" },
+    { file: "mqdefault.jpg", name: "Medium Quality", badge: "MQ", color: "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]" },
+    { file: "default.jpg", name: "Default", badge: "Normal", color: "bg-surface-500 shadow-[0_0_10px_rgba(100,116,139,0.6)]" },
+    { file: "0.jpg", name: "Player Background", badge: "bg", color: "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.6)]" },
+    { file: "1.jpg", name: "Start Frame", badge: "thumb", color: "bg-rose-500 shadow-[0_0_10px_rgba(244,63,114,0.6)]" },
+    { file: "2.jpg", name: "Middle Frame", badge: "thumb", color: "bg-rose-500 shadow-[0_0_10px_rgba(244,63,114,0.6)]" },
+    { file: "3.jpg", name: "End Frame", badge: "thumb", color: "bg-rose-500 shadow-[0_0_10px_rgba(244,63,114,0.6)]" }
   ];
     thumbnailGrid.innerHTML = "";
     currentAvailableThumbs = [];
@@ -329,21 +331,22 @@ const renderThumbnails = (videoId) => {
         const imgUrl = `https://img.youtube.com/vi/${videoId}/${fmt.file}`;
         const li = document.createElement("li");
         li.style.animationDelay = `${index * 0.1}s`;
-        li.className = "animate-slide-up bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden shadow-lg group flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl";
+        li.className = "animate-slide-up bg-white/50 dark:bg-surface-900/60 backdrop-blur-xl border border-surface-200/50 dark:border-brand-500/20 rounded-2xl overflow-hidden shadow-neon-surface group flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-neon hover:border-brand-500/50";
         li.innerHTML = `
-          <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
-            <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
-            <div class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-md text-white shadow-md ${fmt.color}">${fmt.badge}</div>
+          <div class="relative w-full aspect-video bg-surface-100 dark:bg-surface-950 overflow-hidden border-b border-brand-500/20">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 z-10 transition-opacity duration-300"></div>
+            <img src="${imgUrl}" alt="${fmt.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360?text=Not+Found'" />
+            <div class="absolute top-3 right-3 text-[0.65rem] font-black uppercase tracking-widest px-2.5 py-1 rounded border border-white/20 text-white z-20 ${fmt.color}">${fmt.badge}</div>
           </div>
-          <div class="p-5 flex flex-col flex-grow">
-            <h3 class="font-display font-bold text-lg mb-1 dark:text-white flex items-center justify-between">
+          <div class="p-5 flex flex-col flex-grow relative z-20">
+            <h3 class="font-display font-black uppercase tracking-wider text-lg mb-2 text-surface-900 dark:text-white flex items-center justify-between group-hover:text-brand-400 transition-colors drop-shadow-[0_0_8px_rgba(0,240,255,0)] group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]">
               ${fmt.name}
-              <button class="copy-link-btn w-8 h-8 rounded-lg bg-surface-100 hover:bg-brand-500 hover:text-white dark:text-surface-300 dark:bg-surface-800 dark:hover:bg-brand-500 flex items-center justify-center transition-colors" title="Copy Image Link">
-                <i class="ph-bold ph-link"></i>
+              <button class="copy-link-btn w-9 h-9 rounded-xl bg-surface-100 dark:bg-surface-800/80 hover:bg-brand-500 hover:text-surface-950 dark:hover:bg-brand-500 dark:text-brand-400 dark:hover:text-surface-950 border border-brand-500/20 flex items-center justify-center transition-all hover:shadow-neon hover:scale-110" title="Copy Image Link">
+                <i class="ph-bold ph-link text-lg"></i>
               </button>
             </h3>
             <p class="text-xs text-surface-500 dark:text-surface-400 font-mono flex items-center gap-2">
-              <span class="status-indicator"><i class="ph ph-spinner animate-spin"></i></span>
+              <span class="status-indicator"><i class="ph ph-spinner animate-spin text-brand-500 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]"></i></span>
               <span class="opacity-40">•</span>
               <span>${fmt.file}</span>
             </p>
@@ -353,16 +356,16 @@ const renderThumbnails = (videoId) => {
         const imgCheck = new Image();
         imgCheck.onload = () => {
           if (imgCheck.width === 120 && imgCheck.height === 90) {
-            statusIndicator.innerHTML = `<span class="text-red-500 dark:text-red-400 font-semibold">Unavailable</span>`;
-            li.classList.add("opacity-50", "grayscale");
+            statusIndicator.innerHTML = `<span class="text-red-500 dark:text-red-400 font-bold uppercase tracking-widest drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">Unavailable</span>`;
+            li.classList.add("opacity-40", "grayscale");
           } else {
-            statusIndicator.innerHTML = `<span class="text-emerald-500 font-semibold"><i class="ph-bold ph-check"></i> Available</span>`;
+            statusIndicator.innerHTML = `<span class="text-emerald-400 font-bold uppercase tracking-widest drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]"><i class="ph-bold ph-check"></i> Available</span>`;
             currentAvailableThumbs.push({ url: imgUrl, filename: `${videoId}-${fmt.file}` });
           }
           resolve();
         };
-        imgCheck.onerror = () => { 
-          statusIndicator.innerHTML = `<span class="text-red-500 font-semibold">Error</span>`; 
+        imgCheck.onerror = () => {
+          statusIndicator.innerHTML = `<span class="text-red-500 font-bold uppercase tracking-widest">Error</span>`;
           resolve();
         };
         imgCheck.src = imgUrl;
