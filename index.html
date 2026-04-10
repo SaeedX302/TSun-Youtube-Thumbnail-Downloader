@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TSun Thumbnail Studio — YouTube Thumbnail Downloader</title>
+    <meta
+      name="description"
+      content="Extract and download YouTube thumbnails in every available quality."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static/font/lucide.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="logo">TSun Thumbnail Studio</a>
+        <div class="header-actions">
+          <a href="https://github.com/SaeedX302/TSun-Youtube-Thumbnail-Downloader" 
+             class="action-btn" target="_blank" rel="noopener" title="Source Code">
+            <i class="lc-github"></i>
+          </a>
+          <button type="button" class="action-btn theme-toggle" id="theme-toggle" title="Toggle Theme">
+            <i class="lc-sun icon-sun"></i>
+            <i class="lc-moon icon-moon"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-shell">
+
+      <header class="hero">
+        <p class="pill">2026 Edition</p>
+        <h1>TSun Thumbnail Studio</h1>
+        <p class="hero__subtitle">
+          Paste any YouTube link and instantly download every available thumbnail quality.
+        </p>
+      </header>
+
+      <section class="panel panel--input" aria-label="YouTube URL input">
+        <label class="field-label" for="urlTxt">YouTube URL or Video ID</label>
+        <div class="input-row">
+          <input
+            type="text"
+            id="urlTxt"
+            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" id="btn-paste" class="btn btn--subtle">Paste</button>
+          <button type="button" id="btn-grab" class="btn btn--primary">Generate</button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel panel--preview" aria-label="Video preview">
+        <div class="preview-head">
+          <h2>Video Preview</h2>
+          <button type="button" id="btn-copy-id" class="btn btn--tiny" disabled>
+            Copy Video ID
+          </button>
+        </div>
+        <div class="video-wrap">
+          <iframe
+            id="youtube"
+            title="YouTube video preview"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+      </section>
+
+      <section id="resultSection" class="panel panel--results hidden" aria-label="Thumbnail downloads">
+        <div class="result-head">
+          <h2>Available Thumbnails</h2>
+          <span id="resultMeta" class="meta"></span>
+        </div>
+        <div id="thumbGrid" class="thumb-grid"></div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        TSun Thumbnail Studio &bull; Fast, clean, and dependency-free.
+      </div>
+    </footer>
+
+    <!-- GSAP core + ScrollTrigger -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="animations.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
