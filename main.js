@@ -199,4 +199,25 @@ async function generateThumbnails() {
   }
 
   setStatus('Ready. Click any quality to download.', 'ok');
+  scrollToResults();
+}
+
+function scrollToResults() {
+  const offset = 78;
+  const targetTop = resultSection.getBoundingClientRect().top + window.pageYOffset - offset;
+
+  if (window.gsap?.scrollTo) {
+    gsap.to(window, {
+      scrollTo: { y: Math.max(targetTop, 0), autoKill: false },
+      duration: 1.1,
+      ease: 'power3.inOut',
+      overwrite: 'auto',
+    });
+    return;
+  }
+
+  window.scrollTo({
+    top: Math.max(targetTop, 0),
+    behavior: 'smooth',
+  });
 }
