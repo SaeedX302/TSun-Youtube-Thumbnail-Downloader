@@ -1,46 +1,41 @@
-/**
- * animations.js — Clay GSAP Animation Module
- * Handles all GSAP-powered entrance, scroll, and interaction animations.
- * Respects prefers-reduced-motion. Exposes ClayAnimations on window for main.js.
+﻿/**
+ * animations.js -- Clay GSAP Animation Module
+ * Handles hero, storytelling, results, and interaction animations with GSAP.
+ * Respects prefers-reduced-motion and exposes ClayAnimations on window for main.js.
  */
 (function () {
   'use strict';
 
-  const prefersReducedMotion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)'
-  ).matches;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ── Public API ─────────────────────────────────────────────────── */
   window.ClayAnimations = {
     animateResultsReveal,
     animateStatus,
   };
 
-  /* ── Init ───────────────────────────────────────────────────────── */
   function init() {
     if (prefersReducedMotion || typeof gsap === 'undefined') return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Set initial visibility for elements that will animate in
-    gsap.set(['.pill', '.hero h1', '.hero__subtitle', '.panel--input'], {
-      opacity: 0,
-      y: 0,
-    });
+    gsap.set(
+      ['.pill', '.hero h1', '.hero__subtitle', '.hero__cta span', '.hero__scroll-indicator'],
+      {
+        opacity: 0,
+        y: 18,
+      }
+    );
 
-    /* Hero entrance — staggered sequence */
-    const heroTl = gsap.timeline({
-      defaults: { ease: 'power3.out' },
-      delay: 0.05,
-    });
+    gsap.set('.panel--input', { opacity: 0, y: 36 });
+    gsap.set('.story-card', { opacity: 0, y: 32, scale: 0.97 });
+    gsap.set('.cta-strip', { opacity: 0, y: 34 });
+    gsap.set('.hero__decor--orb', { yPercent: -8 });
+    gsap.set('.hero__decor--waves', { yPercent: -4 });
+
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.05 });
 
     heroTl
-      .to('.pill', {
-        y: 0,
-        opacity: 1,
-        duration: 0.5,
-        clearProps: 'y',
-      })
+      .fromTo('.pill', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, clearProps: 'all' })
       .fromTo(
         '.hero h1',
         { y: 44, opacity: 0 },
@@ -54,13 +49,33 @@
         '-=0.42'
       )
       .fromTo(
+        '.hero__cta span',
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.45, stagger: 0.12 },
+        '-=0.36'
+      )
+      .fromTo(
+        '.hero__scroll-indicator',
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, clearProps: 'all' },
+        '-=0.28'
+      )
+      .fromTo(
         '.panel--input',
         { y: 36, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.60, clearProps: 'all' },
-        '-=0.40'
+        '-=0.50'
       );
 
-    /* Preview panel — ScrollTrigger reveal */
+    gsap.to('.hero__scroll-indicator svg circle', {
+      y: 6,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      duration: 0.8,
+      delay: 0.5,
+    });
+
     gsap.fromTo(
       '.panel--preview',
       { y: 40, opacity: 0 },
@@ -77,20 +92,73 @@
         },
       }
     );
+
+    gsap.to('.hero__decor--orb', {
+      yPercent: 12,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.5,
+      },
+    });
+
+    gsap.to('.hero__decor--waves', {
+      yPercent: 7,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.4,
+      },
+    });
+
+    gsap.fromTo(
+      '.story-card',
+      { y: 32, opacity: 0, scale: 0.97 },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 0.68,
+        ease: 'power2.out',
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: '.storyline',
+          start: 'top 92%',
+          once: true,
+        },
+      }
+    );
+
+    gsap.fromTo(
+      '.cta-strip',
+      { y: 34, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.55,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.cta-strip',
+          start: 'top 92%',
+          once: true,
+        },
+      }
+    );
   }
 
-  /* ── Results reveal — called by main.js ─────────────────────────── */
   function animateResultsReveal() {
     if (prefersReducedMotion || typeof gsap === 'undefined') return;
 
-    /* Section slides up */
     gsap.fromTo(
       '#resultSection',
       { y: 32, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }
     );
 
-    /* Cards stagger in after a short delay */
     const cards = document.querySelectorAll('.thumb-card');
     if (cards.length) {
       gsap.fromTo(
@@ -109,7 +177,6 @@
     }
   }
 
-  /* ── Status message — called by main.js ─────────────────────────── */
   function animateStatus() {
     if (prefersReducedMotion || typeof gsap === 'undefined') return;
 
@@ -120,7 +187,6 @@
     );
   }
 
-  /* ── Bootstrap ──────────────────────────────────────────────────── */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
