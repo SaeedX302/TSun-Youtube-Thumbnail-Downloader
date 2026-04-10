@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/github/stars/SaeedX302/TSun-Youtube-Thumbnail-Downloader?style=for-the-badge" />
   <img src="https://img.shields.io/github/forks/SaeedX302/TSun-Youtube-Thumbnail-Downloader?style=for-the-badge" />
   <img src="https://img.shields.io/github/issues/SaeedX302/TSun-Youtube-Thumbnail-Downloader?style=for-the-badge" />
-  <img src="https://img.shields.io/github/license/SaeedX302/TSun-Youtube-Thumbnail-Downloader?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge" />
 </p>
 
 ---
@@ -95,12 +95,23 @@ Press **Enter** instead of clicking for faster workflow ⚡
 
 ## 🧩 Project Structure
 
-```bash
+```text
 📁 TSun Thumbnail Studio
- ├── index.html      # UI Layout & Sections
- ├── style.css       # Design System & Themes
- ├── main.js         # Core Logic & API Handling
- ├── animations.js   # GSAP Animations Engine
+ ├── 📁 assets/
+ │   ├── 📁 css/
+ │   │   └── style.css
+ │   └── 📁 js/
+ │       ├── main.js
+ │       └── animations.js
+ ├── index.html
+ ├── README.md
+ ├── LICENSE
+ ├── CONTRIBUTING.md
+ ├── DMCA.md
+ ├── vercel.json
+ ├── render.yaml
+ ├── Dockerfile
+ └── netlify.toml
 ```
 
 ---
@@ -152,7 +163,7 @@ We welcome contributors!
 
 ## 🧾 License
 
-This project is licensed under the **MIT License**
+This project is licensed under a **Proprietary License**. See the `LICENSE` file for full details and usage restrictions.
 
 ---
 
