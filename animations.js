@@ -16,7 +16,7 @@
   function init() {
     if (prefersReducedMotion || typeof gsap === 'undefined') return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     gsap.set(
       ['.pill', '.hero h1', '.hero__subtitle', '.hero__cta span', '.hero__scroll-indicator'],
@@ -79,6 +79,27 @@
       duration: 0.8,
       delay: 0.5,
     });
+
+    const heroIndicator = document.querySelector('.hero__scroll-indicator');
+    const storySection = document.querySelector('.storyline');
+
+    const smoothScrollToStory = () => {
+      if (!storySection) return;
+      gsap.to(window, {
+        scrollTo: { y: storySection, offsetY: 80 },
+        duration: 0.75,
+        ease: 'power3.inOut',
+      });
+    };
+
+    if (heroIndicator) {
+      heroIndicator.addEventListener('click', smoothScrollToStory);
+      heroIndicator.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          smoothScrollToStory();
+        }
+      });
+    }
 
     gsap.fromTo(
       '.panel--preview',
