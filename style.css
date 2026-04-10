@@ -302,11 +302,7 @@ h1, h2, h3 {
 }
 
 .storyline {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-feature);
   padding: 32px 28px;
-  box-shadow: var(--shadow-clay);
   display: grid;
   gap: 20px;
 }
@@ -389,10 +385,6 @@ h1, h2, h3 {
   position: relative;
   margin: 0;
   padding: 24px 32px;
-  border-radius: var(--radius-card);
-  background: linear-gradient(120deg, rgba(59, 211, 253, 0.15), rgba(132, 231, 165, 0.15));
-  border: 1px solid rgba(132, 231, 165, 0.35);
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -445,6 +437,26 @@ h1, h2, h3 {
   border-radius: var(--radius-feature);
   padding: 24px;
   box-shadow: var(--shadow-clay);
+}
+
+.widget-surface {
+  position: relative;
+  background:
+    radial-gradient(circle at 18% -10%, rgba(255, 255, 255, 0.88), transparent 52%),
+    radial-gradient(circle at 78% 20%, rgba(248, 204, 101, 0.32), transparent 55%),
+    radial-gradient(circle at 50% 90%, rgba(59, 211, 253, 0.18), transparent 55%),
+    rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-feature);
+  box-shadow: var(--shadow-clay);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.widget-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14);
 }
 
 /* ── INPUT SECTION ──────────────────────────────────────────────── */
@@ -630,7 +642,6 @@ h2 {
 
 /* ── RESULTS PANEL — Matcha swatch section ──────────────────────── */
 .panel--results {
-  background: var(--matcha-800);
   border-color: rgba(132, 231, 165, 0.18);
 }
 
@@ -642,6 +653,16 @@ h2 {
   border-bottom: 1px solid rgba(132, 231, 165, 0.2);
   padding-bottom: 14px;
   margin-bottom: 20px;
+}
+
+.panel--results.widget-surface {
+  background:
+    linear-gradient(135deg, rgba(8, 50, 32, 0.92), rgba(4, 32, 20, 0.95)),
+    radial-gradient(circle at 18% 10%, rgba(132, 231, 165, 0.3), transparent 50%),
+    radial-gradient(circle at 72% 0%, rgba(59, 211, 253, 0.25), transparent 60%),
+    rgba(5, 30, 18, 0.9);
+  background-blend-mode: screen, screen, screen, normal;
+  border-color: rgba(132, 231, 165, 0.35);
 }
 
 .result-head {
@@ -915,5 +936,11 @@ footer {
   .story-card,
   .cta-strip {
     transition: none;
+  }
+
+  .widget-surface {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: var(--shadow-clay) !important;
   }
 }
