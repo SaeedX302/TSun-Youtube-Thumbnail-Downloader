@@ -161,6 +161,15 @@ body {
   box-shadow: var(--shadow-hover);
 }
 
+.action-btn--icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.action-btn--icon {
+  padding: 8px;
+}
+
 .action-btn i {
   font-size: 1.25rem;
   display: flex;
@@ -356,6 +365,24 @@ h1, h2, h3 {
   margin: 0;
   color: var(--charcoal);
   line-height: 1.5;
+}
+
+.storyline__reveal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-light);
+  background: linear-gradient(120deg, rgba(248, 204, 101, 0.2), rgba(59, 211, 253, 0.15));
+  color: var(--charcoal);
+  font-weight: 500;
+}
+
+.storyline__reveal-line {
+  width: 70px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--matcha-300), transparent);
 }
 
 .cta-strip {
@@ -617,6 +644,51 @@ h2 {
   margin-bottom: 20px;
 }
 
+.result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.result-head__subtitle {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.4;
+  max-width: 440px;
+}
+
+.result-benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.result-benefit {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-benefit__label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 6px;
+}
+
+.result-benefit__text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
 /* ── META LABEL ─────────────────────────────────────────────────── */
 .meta {
   color: var(--matcha-300);
@@ -629,16 +701,16 @@ h2 {
 /* ── THUMB GRID ─────────────────────────────────────────────────── */
 .thumb-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .thumb-card {
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 10px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-feature);
   padding: 12px;
   box-shadow: var(--shadow-clay);
@@ -791,6 +863,15 @@ footer {
   }
 
   .storyline__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .result-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .result-benefits {
     grid-template-columns: 1fr;
   }
 

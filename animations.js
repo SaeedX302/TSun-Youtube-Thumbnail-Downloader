@@ -29,6 +29,10 @@
     gsap.set('.panel--input', { opacity: 0, y: 36 });
     gsap.set('.story-card', { opacity: 0, y: 32, scale: 0.97 });
     gsap.set('.cta-strip', { opacity: 0, y: 34 });
+    gsap.set('.result-head__subtitle', { opacity: 0, y: 20 });
+    gsap.set('.result-benefits article', { opacity: 0, y: 24 });
+    gsap.set('.storyline__intro', { opacity: 0, y: 28 });
+    gsap.set('.storyline__reveal', { opacity: 0, y: 26, scale: 0.96 });
     gsap.set('.hero__decor--orb', { yPercent: -8 });
     gsap.set('.hero__decor--waves', { yPercent: -4 });
 
@@ -115,23 +119,39 @@
       },
     });
 
-    gsap.fromTo(
-      '.story-card',
-      { y: 32, opacity: 0, scale: 0.97 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.68,
-        ease: 'power2.out',
-        stagger: 0.12,
-        scrollTrigger: {
-          trigger: '.storyline',
-          start: 'top 92%',
-          once: true,
+    const storyTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.storyline',
+        start: 'top 92%',
+        once: true,
+      },
+    });
+
+    storyTl
+      .fromTo(
+        '.storyline__intro',
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+      )
+      .fromTo(
+        '.story-card',
+        { y: 28, opacity: 0, scale: 0.97 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.65,
+          ease: 'power2.out',
+          stagger: 0.12,
         },
-      }
-    );
+        '-=0.35'
+      )
+      .fromTo(
+        '.storyline__reveal',
+        { y: 26, opacity: 0, scale: 0.96 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'power1.out' },
+        '-=0.28'
+      );
 
     gsap.fromTo(
       '.cta-strip',
@@ -157,6 +177,25 @@
       '#resultSection',
       { y: 32, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }
+    );
+
+    gsap.fromTo(
+      '.result-head__subtitle',
+      { y: 22, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }
+    );
+
+    gsap.fromTo(
+      '.result-benefits article',
+      { y: 24, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power2.out',
+        stagger: 0.1,
+        clearProps: 'all',
+      }
     );
 
     const cards = document.querySelectorAll('.thumb-card');
