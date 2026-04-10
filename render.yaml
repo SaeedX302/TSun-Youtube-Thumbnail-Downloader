@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tsun-thumbnail-downloader
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+    headers:
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
